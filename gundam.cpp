@@ -171,8 +171,13 @@ void GundamModel::draw()
 
 	// draw the Gundam model
 	// draw the torso
+	GLfloat lightColor[] = {VAL(LIGHT_INTENSITY)/100.0, VAL(LIGHT_INTENSITY)/100.0, VAL(LIGHT_INTENSITY)/100.0, 1.0f};
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor);
 	setAmbientColor(1.0f, 1.0f, 1.0f);
 	setDiffuseColor(COLOR_GREEN);
+//	setShininess(VAL(LIGHT_INTENSITY));
+	setSpecularColor(0.8f, 0.5f, 0.0f);
 	glPushMatrix();
 		glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 		glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
@@ -181,6 +186,12 @@ void GundamModel::draw()
         //draw head
 		glPushMatrix();
 			glTranslated(0, upperBodySize[1], 0);
+			if (VAL(ROTATE_HEAD_X))
+				glRotated(VAL(ROTATE_HEAD_X), 1.0, 0.0, 0.0);
+			if (VAL(ROTATE_HEAD_Y))
+				glRotated(VAL(ROTATE_HEAD_Y), 0.0, 1.0, 0.0);
+			if (VAL(ROTATE_HEAD_Z))
+				glRotated(VAL(ROTATE_HEAD_Z), 0.0, 0.0, 1.0);
 			drawHead();
 		glPopMatrix();
 
@@ -193,6 +204,8 @@ void GundamModel::draw()
 			drawRightShoulder(); 
 				//draw right upper arm
 				glTranslated(rightShoulderSize[0]/2, rightShoulderSize[1]/2, 0);
+				if (VAL(RIGHT_FOREARM_ROTATION))
+					glRotated(VAL(RIGHT_FOREARM_ROTATION), 1.0, 0.0, 0.0);
 				glRotated(-90, 0.0, 0.0, 1.0);
 				drawRightUpperArm();
 				    //draw right lower arm
@@ -212,6 +225,8 @@ void GundamModel::draw()
 			drawLeftShoulder();
 			//draw left upper arm
 			glTranslated(-leftShoulderSize[0] / 2, leftShoulderSize[1] / 2, 0);
+			if (VAL(LEFT_FOREARM_ROTATION))
+				glRotated(VAL(LEFT_FOREARM_ROTATION), 1.0, 0.0, 0.0);
 			glRotated(90, 0.0, 0.0, 1.0);
 			drawLeftUpperArm();
 			//draw left lower arm
@@ -293,12 +308,13 @@ void GundamModel::drawLowerBody(){
 void GundamModel::drawHead(){
 	glPushMatrix();
 	    //draw neck
+
 		setDiffuseColor(COLOR_WHITE);
 		glPushMatrix();
-		//glTranslated(-headSize[0] / 6, 0, -headSize[2] / 6);
-			glScaled(headSize[0]/3, headSize[1]/6, headSize[2]/3);
-			glRotated(-90, 1.0, 0.0, 0.0);
-			drawCylinder(2, 0.5, 0.5);
+			glTranslated(-headSize[0] / 6, -1, -headSize[2] / 6);
+			glScaled(headSize[0]/3, headSize[1], headSize[2]/3);
+			//glRotated(-90, 1.0, 0.0, 0.0);
+			drawBox(1, 1, 1);
 		glPopMatrix();
 		//draw head
 		setDiffuseColor(COLOR_GREEN);
@@ -493,6 +509,14 @@ int main()
 	controls[ROTATE_UPPER_BODY] = ModelerControl("Rotate upper body Y", 90, -90, 1, 0);
 	controls[RAISE_RIGHT_ARM] = ModelerControl("Raise right arm X", -75, 90, 1, 0);
 	controls[RAISE_LEFT_ARM] = ModelerControl("Raise left arm X", -75, 90, 1, 0);
+	controls[ROTATE_HEAD_X] = ModelerControl("Rotate head X", -45, 45, 1, 0);
+	controls[ROTATE_HEAD_Y] = ModelerControl("Rotate head Y", -45, 45, 1, 0);
+	controls[ROTATE_HEAD_Z] = ModelerControl("Rotate head Z", -45, 45, 1, 0);
+	controls[LEFT_FOREARM_ROTATION] = ModelerControl("Rotate left forearm", -45, 45, 1, 0);
+	controls[RIGHT_FOREARM_ROTATION] = ModelerControl("Rotate right forearm", -45, 45, 1, 0);
+	controls[LEFT_ARM_JOINT_MOVEMENT] = ModelerControl("Left arm joint movement", 0, 10, 1, 0);
+	controls[RIGHT_ARM_JOINT_MOVEMENT] = ModelerControl("Right arm joint movement", 0, 10, 1, 0);
+	controls[LIGHT_INTENSITY] = ModelerControl("Light intensity", 0, 100, 5, 50);
 
 	ModelerApplication::Instance()->Init(&createGundamModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
