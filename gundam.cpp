@@ -84,8 +84,8 @@ GundamModel::GundamModel(int x, int y, int w, int h, char *label)
 	rightShoulderSize[2] = 2;
 
 	rightUpperArmSize[0] = 1;
-	rightUpperArmSize[1] = 1;
-	rightUpperArmSize[2] = 2;
+	rightUpperArmSize[1] = 1.5;
+	rightUpperArmSize[2] = 1;
 
 	rightLowerArmSize[0] = 1.5;
 	rightLowerArmSize[1] = 2.5;
@@ -100,8 +100,8 @@ GundamModel::GundamModel(int x, int y, int w, int h, char *label)
 	leftShoulderSize[2] = 2;
 
 	leftUpperArmSize[0] = 1;
-	leftUpperArmSize[1] = 1;
-	leftUpperArmSize[2] = 2;
+	leftUpperArmSize[1] = 1.5;
+	leftUpperArmSize[2] = 1;
 
 	leftLowerArmSize[0] = 1.5;
 	leftLowerArmSize[1] = 2.5;
@@ -206,17 +206,17 @@ void GundamModel::draw()
 		//draw left shoulder
 		glTranslated(-upperBodySize[0] / 2, upperBodySize[1] - leftShoulderSize[0] / 2, 0);
 		glRotated(90, 0.0, 0.0, 1.0);
-		drawRightShoulder();
+		drawLeftShoulder();
 		//draw left upper arm
 		glTranslated(-leftShoulderSize[0] / 2, leftShoulderSize[1] / 2, 0);
 		glRotated(90, 0.0, 0.0, 1.0);
-		drawRightUpperArm();
+		drawLeftUpperArm();
 		//draw left lower arm
 		glTranslated(0.0, leftUpperArmSize[1], 0.0);
-		drawRightLowerArm();
+		drawLeftLowerArm();
 		//draw left Foot
 		glTranslated(0.0, leftLowerArmSize[1], 0.0);
-		drawRightFist();
+		drawLeftFist();
 		glPopMatrix();
 
 
@@ -287,12 +287,14 @@ void GundamModel::drawLowerBody(){
 void GundamModel::drawHead(){
 	glPushMatrix();
 	    //draw neck
+		setDiffuseColor(COLOR_WHITE);
 		glPushMatrix();
 		glTranslated(-headSize[0] / 6, 0, -headSize[2] / 6);
 		glScaled(headSize[0]/3, headSize[1]/6, headSize[2]/3);
 		drawBox(1, 1, 1);
 		glPopMatrix();
 		//draw head
+		setDiffuseColor(COLOR_GREEN);
 		glPushMatrix();
 		glTranslated(-headSize[0] / 2, headSize[1]/6, -headSize[2] / 2);
 		glScaled(headSize[0], headSize[1], headSize[2]);
@@ -305,7 +307,7 @@ void GundamModel::drawHead(){
 //TODO
 void GundamModel::drawRightShoulder(){
 	glPushMatrix();
-	glTranslated(-rightShoulderSize[0] / 2, 0, -rightShoulderSize[2] / 2);
+	glTranslated(-rightShoulderSize[0] / 2 , 0.5, -rightShoulderSize[2] / 2);
 	glScaled(rightShoulderSize[0], rightShoulderSize[1], rightShoulderSize[2]);
 	drawBox(1, 1, 1);
 	glPopMatrix();
@@ -314,8 +316,9 @@ void GundamModel::drawRightShoulder(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightUpperArm(){
+	setDiffuseColor(COLOR_WHITE);
 	glPushMatrix();
-	glTranslated(-rightUpperArmSize[0] / 2, 0, -rightUpperArmSize[2] / 2);
+	glTranslated(-rightUpperArmSize[0] / 2 -0.5, 0, -rightUpperArmSize[2] / 2);
 	glScaled(rightUpperArmSize[0], rightUpperArmSize[1], rightUpperArmSize[2]);
 	drawBox(1, 1, 1);
 	glPopMatrix();
@@ -324,8 +327,9 @@ void GundamModel::drawRightUpperArm(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightLowerArm(){
+	setDiffuseColor(COLOR_GREEN);
 	glPushMatrix();
-	glTranslated(-rightLowerArmSize[0] / 2, 0, -rightLowerArmSize[2] / 2);
+	glTranslated(-rightLowerArmSize[0] / 2 -0.5, 0, -rightLowerArmSize[2] / 2);
 	glScaled(rightLowerArmSize[0], rightLowerArmSize[1], rightLowerArmSize[2]);
 	drawBox(1, 1, 1);
 	glPopMatrix();
@@ -335,7 +339,7 @@ void GundamModel::drawRightLowerArm(){
 //TODO
 void GundamModel::drawRightFist(){
 	glPushMatrix();
-	glTranslated(-rightFistSize[0] / 2, 0, -rightFistSize[2] / 2);
+	glTranslated(-rightFistSize[0] / 2 -0.5, 0, -rightFistSize[2] / 2);
 	glScaled(rightFistSize[0], rightFistSize[1], rightFistSize[2]);
 	drawBox(1, 1, 1);
 	glPopMatrix();
@@ -345,7 +349,7 @@ void GundamModel::drawRightFist(){
 //TODO
 void GundamModel::drawLeftShoulder(){
 	glPushMatrix();
-	glTranslated(-leftShoulderSize[0] / 2, 0, -leftShoulderSize[2] / 2);
+	glTranslated(-leftShoulderSize[0] / 2, 0.5, -leftShoulderSize[2] / 2);
 	glScaled(leftShoulderSize[0], leftShoulderSize[1], leftShoulderSize[2]);
 	drawBox(1, 1, 1);
 	glPopMatrix();
@@ -354,8 +358,9 @@ void GundamModel::drawLeftShoulder(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftUpperArm(){
+	setDiffuseColor(COLOR_WHITE);
 	glPushMatrix();
-	glTranslated(-leftUpperArmSize[0] / 2, 0, -leftUpperArmSize[2] / 2);
+	glTranslated(-leftUpperArmSize[0] / 2 + 0.5 , 0, -leftUpperArmSize[2] / 2);
 	glScaled(leftUpperArmSize[0], leftUpperArmSize[1], leftUpperArmSize[2]);
 	drawBox(1, 1, 1);
 	glPopMatrix();
@@ -364,8 +369,9 @@ void GundamModel::drawLeftUpperArm(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftLowerArm(){
+	setDiffuseColor(COLOR_GREEN);
 	glPushMatrix();
-	glTranslated(-leftLowerArmSize[0] / 2, 0, -leftLowerArmSize[2] / 2);
+	glTranslated(-leftLowerArmSize[0] / 2 + 0.5 , 0, -leftLowerArmSize[2] / 2);
 	glScaled(leftLowerArmSize[0], leftLowerArmSize[1], leftLowerArmSize[2]);
 	drawBox(1, 1, 1);
 	glPopMatrix();
@@ -375,7 +381,7 @@ void GundamModel::drawLeftLowerArm(){
 //TODO
 void GundamModel::drawLeftFist(){
 	glPushMatrix();
-	glTranslated(-leftFistSize[0] / 2, 0, -leftFistSize[2] / 2);
+	glTranslated(-leftFistSize[0] / 2 + 0.5 , 0, -leftFistSize[2] / 2);
 	glScaled(leftFistSize[0], leftFistSize[1], leftFistSize[2]);
 	drawBox(1, 1, 1);
 	glPopMatrix();
@@ -394,6 +400,7 @@ void GundamModel::drawRightThigh(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightUpperLeg(){
+	setDiffuseColor(COLOR_WHITE);
 	glPushMatrix();
 	glTranslated(-rightUpperLegSize[0] / 2, 0, -rightUpperLegSize[2] / 2);
 	glScaled(rightUpperLegSize[0], rightUpperLegSize[1], rightUpperLegSize[2]);
@@ -404,6 +411,7 @@ void GundamModel::drawRightUpperLeg(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightLowerLeg(){
+	setDiffuseColor(COLOR_GREEN);
 	glPushMatrix();
 	glTranslated(-rightLowerLegSize[0] / 2, 0, -rightLowerLegSize[2] / 2);
 	glScaled(rightLowerLegSize[0], rightLowerLegSize[1], rightLowerLegSize[2]);
@@ -435,6 +443,7 @@ void GundamModel::drawLeftThigh(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftUpperLeg(){
+	setDiffuseColor(COLOR_WHITE);
 	glPushMatrix();
 	glTranslated(-leftUpperLegSize[0] / 2, 0, -leftUpperLegSize[2] / 2);
 	glScaled(leftUpperLegSize[0], leftUpperLegSize[1], leftUpperLegSize[2]);
@@ -445,6 +454,7 @@ void GundamModel::drawLeftUpperLeg(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftLowerLeg(){
+	setDiffuseColor(COLOR_GREEN);
 	glPushMatrix();
 	glTranslated(-leftLowerLegSize[0] / 2, 0, -leftLowerLegSize[2] / 2);
 	glScaled(leftLowerLegSize[0], leftLowerLegSize[1], leftLowerLegSize[2]);
