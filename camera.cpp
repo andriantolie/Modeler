@@ -178,9 +178,39 @@ void Camera::applyViewingTransform() {
 
 	// Place the camera at mPosition, aim the camera at
 	// mLookAt, and twist the camera such that mUpVector is up
-	gluLookAt(	mPosition[0], mPosition[1], mPosition[2],
-				mLookAt[0],   mLookAt[1],   mLookAt[2],
-				mUpVector[0], mUpVector[1], mUpVector[2]);
+	//gluLookAt(	mPosition[0], mPosition[1], mPosition[2],
+	//			mLookAt[0],   mLookAt[1],   mLookAt[2],
+	//			mUpVector[0], mUpVector[1], mUpVector[2]);
+	lookAt(mPosition, mLookAt, mUpVector);
 }
 
+void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up){
+
+	//place the view at the eye position
+	Vec3f viewZPosAxis = eye - at;
+	viewZPosAxis.normalize();
+	//X axis is cross product between uo  and z axis
+	Vec3f viewXPosAxis = Vec3f(up[1] * viewZPosAxis[2] - viewZPosAxis[1] * up[2],
+		- up[0] * viewZPosAxis[2] + viewZPosAxis[0] * up[2], 
+		up[0] * viewZPosAxis[1] - viewZPosAxis[0] * up[1]);
+	viewXPosAxis.normalize();
+	//Y axis is cross product between z axis  and x axis
+	Vec3f viewYPosAxis = Vec3f(viewZPosAxis[1] * viewXPosAxis[2] - viewXPosAxis[1] * viewZPosAxis[2],
+		-viewZPosAxis[0] * viewXPosAxis[2] + viewXPosAxis[0] * viewZPosAxis[2],
+		viewZPosAxis[0] * viewXPosAxis[1] - viewXPosAxis[0] * viewZPosAxis[1]);
+	viewYPosAxis.normalize();
+
+	float worldToViewCoord[16] = { viewXPosAxis[0], viewYPosAxis[0], viewZPosAxis[0], 0.0,
+		viewXPosAxis[1], viewYPosAxis[1], viewZPosAxis[1], 0.0,
+		viewXPosAxis[2], viewYPosAxis[2], viewZPosAxis[2], 0.0,
+		0, 0, 0, 1.0
+	};
+	
+	//rotate the x,y,z axis of world coordinate to the view coordinate
+	glMultMatrixf(worldToViewCoord);
+
+	//translate the camera to the appropriate position
+	glTranslatef(-eye[0]+at[0], -eye[1]+at[1], -eye[2]+at[2]);
+
+}
 #pragma warning(pop)
