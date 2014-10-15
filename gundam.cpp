@@ -4,7 +4,7 @@
 #include "modelerapp.h"
 #include "modelerdraw.h"
 #include <FL/gl.h>
-
+#include <math.h>
 #include "modelerglobals.h"
 
 // To make a GundamModel, we inherit off of ModelerView
@@ -43,11 +43,13 @@ private:
 	void drawHead();
 
 	void drawRightShoulder();
+	void drawRightShoulder2();
 	void drawRightUpperArm();
 	void drawRightLowerArm();
 	void drawRightFist();
 
 	void drawLeftShoulder();
+	void drawLeftShoulder2();
 	void drawLeftUpperArm();
 	void drawLeftLowerArm();
 	void drawLeftFist();
@@ -67,6 +69,7 @@ private:
 //[0] is x-axis, [1] is y-axis, [2] is z-axis
 GundamModel::GundamModel(int x, int y, int w, int h, char *label)
 : ModelerView(x, y, w, h, label) {
+
 	upperBodySize[0] = 6;
 	upperBodySize[1] = 4;
 	upperBodySize[2] = 3;
@@ -201,7 +204,7 @@ void GundamModel::draw()
 			glTranslated(upperBodySize[0]/2, upperBodySize[1]-rightShoulderSize[0]/2, 0);
 			glRotated(-90, 0.0, 0.0, 1.0);
 			glRotated(-(VAL(RAISE_RIGHT_ARM)), 0.0, 1.0, 0.0);
-			drawRightShoulder(); 
+			VAL(SHOULDER2)? drawRightShoulder2() : drawRightShoulder(); 
 				//draw right upper arm
 				glTranslated(rightShoulderSize[0]/2, rightShoulderSize[1]/2, 0);
 				if (VAL(RIGHT_FOREARM_ROTATION))
@@ -222,7 +225,7 @@ void GundamModel::draw()
 			glTranslated(-upperBodySize[0] / 2, upperBodySize[1] - leftShoulderSize[0] / 2, 0);
 			glRotated(90, 0.0, 0.0, 1.0);
 			glRotated(VAL(RAISE_LEFT_ARM), 0.0, 1.0, 0.0);
-			drawLeftShoulder();
+			VAL(SHOULDER2) ? drawLeftShoulder2() : drawLeftShoulder();
 			//draw left upper arm
 			glTranslated(-leftShoulderSize[0] / 2, leftShoulderSize[1] / 2, 0);
 			if (VAL(LEFT_FOREARM_ROTATION))
@@ -336,6 +339,79 @@ void GundamModel::drawRightShoulder(){
 	glPopMatrix();
 }
 
+void GundamModel::drawRightShoulder2(){
+	glPushMatrix();
+	
+	rightShoulderSize[0] *= 1.5;
+	rightShoulderSize[1] *= 1.5;
+	rightShoulderSize[2] *= 1;
+	glTranslated(0.0, 0.5, 0.0);
+	glPushMatrix();
+	//draw middle part
+	drawTriangle(-rightShoulderSize[0] / 2, 0.0, -rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 2, rightShoulderSize[1], -rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 2, 0.0, -rightShoulderSize[2] / 2);
+	drawTriangle(rightShoulderSize[0] / 2, 0.0, rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 2, rightShoulderSize[1], rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 2, 0.0, rightShoulderSize[2] / 2);
+
+	glTranslated(-rightShoulderSize[0] / 2, 0.0, -rightShoulderSize[2] / 2);
+	drawBox(0.1f, rightShoulderSize[1], rightShoulderSize[2]);
+	drawBox(rightShoulderSize[0], 0.1f, rightShoulderSize[2]);
+	glTranslated(0.0, rightShoulderSize[1], 0.0);
+	glRotated(-atan2(rightShoulderSize[1], rightShoulderSize[0]) * 180 / M_PI, 0.0, 0.0, 1.0);
+	drawBox(sqrt(rightShoulderSize[0]*rightShoulderSize[0] + rightShoulderSize[1]*rightShoulderSize[1]), 0.1f, rightShoulderSize[2]);
+	glPopMatrix();
+
+	//draw upper part
+	glPushMatrix();
+	glTranslated(-rightShoulderSize[0] / 2, rightShoulderSize[1] / 4, 0.0);
+	glRotated(90, 0.0, 0.0, 1.0);
+	drawTriangle(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2
+		);
+	drawTriangle(rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		-rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2);
+	drawTriangle(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		- rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2);
+	drawTriangle(rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2);
+	glTranslated(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2);
+	drawBox(rightShoulderSize[0]/2, 0.1f, rightShoulderSize[2]);
+	glPopMatrix();
+
+	//draw lower part
+	glPushMatrix();
+	glTranslated(0.0, rightShoulderSize[1] / 2, 0.0);
+	glRotated(-atan2(rightShoulderSize[1], rightShoulderSize[0]) * 180 / M_PI, 0.0, 0.0, 1.0);
+	drawTriangle(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2
+
+		);
+	drawTriangle(rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2,
+		- rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		-rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2);
+	drawTriangle(-rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0, 
+		rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2);
+	drawTriangle(-rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2);
+	glTranslated(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2);
+	drawBox(rightShoulderSize[0] / 2, 0.1f, rightShoulderSize[2]);
+	glPopMatrix();
+
+	rightShoulderSize[0] /= 1.5;
+	rightShoulderSize[1] /= 1.5;
+	rightShoulderSize[2] /= 1;
+	glPopMatrix();
+}
+
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightUpperArm(){
@@ -375,6 +451,76 @@ void GundamModel::drawLeftShoulder(){
 		glTranslated(-leftShoulderSize[0] / 2, 0.5, -leftShoulderSize[2] / 2);
 		glScaled(leftShoulderSize[0], leftShoulderSize[1], leftShoulderSize[2]);
 		drawBox(1, 1, 1);
+	glPopMatrix();
+}
+
+void GundamModel::drawLeftShoulder2(){
+	glPushMatrix();
+	leftShoulderSize[0] *= 1.5;
+	leftShoulderSize[1] *= 1.5;
+	leftShoulderSize[2] *= 1;
+	glTranslated(0.0, 0.5, 0.0);
+	glPushMatrix();
+	//draw middle part
+	drawTriangle(-leftShoulderSize[0] / 2, 0.0, -leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 2, leftShoulderSize[1], -leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 2, 0.0, -leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 2, 0.0, leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 2, leftShoulderSize[1], leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 2, 0.0, leftShoulderSize[2] / 2);
+
+	glTranslated(-leftShoulderSize[0] / 2, 0.0, -leftShoulderSize[2] / 2);
+	drawBox(leftShoulderSize[0], 0.1f, leftShoulderSize[2]);
+	glTranslated(leftShoulderSize[0], 0.0, 0.0);
+	drawBox(0.1f, leftShoulderSize[1], leftShoulderSize[2]);
+	glTranslated(-leftShoulderSize[0], 0.0, 0.0);
+	glRotated(atan2(leftShoulderSize[1], leftShoulderSize[0]) * 180 / M_PI, 0.0, 0.0, 1.0);
+	drawBox(sqrt(leftShoulderSize[0] * leftShoulderSize[0] + leftShoulderSize[1] * leftShoulderSize[1]), 0.1f, leftShoulderSize[2]);
+	glPopMatrix();
+
+	//draw upper part
+	glPushMatrix();
+	glTranslated(leftShoulderSize[0] / 2, leftShoulderSize[1] / 4, 0.0);
+	glRotated(-90, 0.0, 0.0, 1.0);
+	drawTriangle(-leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		-leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2, 
+		-leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2);
+	drawTriangle(-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0);
+	glTranslated(-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawBox(leftShoulderSize[0] / 2, 0.1f, leftShoulderSize[2]);
+	glPopMatrix();
+
+	//draw lower part
+	glPushMatrix();
+	glTranslated(0.0, leftShoulderSize[1] / 2, 0.0);
+	glRotated(atan2(leftShoulderSize[1], leftShoulderSize[0]) * 180 / M_PI, 0.0, 0.0, 1.0);
+	drawTriangle(leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		-leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2);
+	drawTriangle(-leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	glTranslated(-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawBox(leftShoulderSize[0] / 2, 0.1f, leftShoulderSize[2]);
+	glPopMatrix();
+
+	leftShoulderSize[0] /= 1.5;
+	leftShoulderSize[1] /= 1.5;
+	leftShoulderSize[2] /= 1;
 	glPopMatrix();
 }
 
@@ -517,6 +663,7 @@ int main()
 	controls[LEFT_ARM_JOINT_MOVEMENT] = ModelerControl("Left arm joint movement", 0, 10, 1, 0);
 	controls[RIGHT_ARM_JOINT_MOVEMENT] = ModelerControl("Right arm joint movement", 0, 10, 1, 0);
 	controls[LIGHT_INTENSITY] = ModelerControl("Light intensity", 0, 100, 5, 50);
+	controls[SHOULDER2] = ModelerControl("Shoulder Type 2?", 0, 1, 1, 0);
 
 	ModelerApplication::Instance()->Init(&createGundamModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
