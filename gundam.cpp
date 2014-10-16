@@ -7,6 +7,44 @@
 #include <math.h>
 #include "modelerglobals.h"
 
+
+//draw bezier curve and rotate it around specific axis
+void drawRotatingCurve(float controlPoints[][3], double xRotationAxis, double yRotationAxis, double zRotationAxis){
+	ModelerDrawState *mds = ModelerDrawState::Instance();
+	switch (mds->m_drawMode)
+	{
+	case NORMAL:
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glShadeModel(GL_SMOOTH);
+		break;
+	case FLATSHADE:
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glShadeModel(GL_FLAT);
+		break;
+	case WIREFRAME:
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glShadeModel(GL_FLAT);
+	default:
+		break;
+	}
+
+	glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, 4, &controlPoints[0][0]);
+	glEnable(GL_MAP1_VERTEX_3);
+	glColor3f(1.0, 0.0, 0.0);
+	setDiffuseColor(COLOR_YELLOW);
+	for (double angle = 0; angle < 360; angle += 0.05){
+		glRotated(angle, xRotationAxis, yRotationAxis, zRotationAxis);
+		glBegin(GL_LINE_STRIP);
+		for (int i = 0; i <= 30; i++){
+			glEvalCoord1f((GLfloat)i / 30.0);
+		}
+		glEnd();
+	}
+	glFlush();
+	glDisable(GL_MAP1_VERTEX_3);
+};
+
+
 // To make a GundamModel, we inherit off of ModelerView
 class GundamModel : public ModelerView
 {
@@ -19,6 +57,7 @@ private:
 	double upperBodySize[3];
 	double lowerBodySize[3];
 	double headSize[3];
+	double hammerSize[3];
 
 	double rightShoulderSize[3];
 	double rightUpperArmSize[3];
@@ -44,6 +83,7 @@ private:
 	void drawLowerBody2();
 	void drawHead();
 	void drawHead2();
+	void drawHammer();
 
 	void drawRightShoulder();
 	void drawRightShoulder2();
@@ -72,7 +112,6 @@ private:
 	void drawLeftLowerLeg();
 	void drawLeftLowerLeg2();
 	void drawLeftFoot();
-		
 };
 
 //[0] is x-axis, [1] is y-axis, [2] is z-axis
@@ -90,6 +129,10 @@ GundamModel::GundamModel(int x, int y, int w, int h, char *label)
 	headSize[0] = 2;
 	headSize[1] = 2;
 	headSize[2] = 2;
+
+	hammerSize[0] = 2;
+	hammerSize[1] = 2;
+	hammerSize[2] = 2;
 
 	rightShoulderSize[0] = 1.5;
 	rightShoulderSize[1] = 2;
@@ -187,7 +230,7 @@ void GundamModel::draw()
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor);
 	setAmbientColor(1.0f, 1.0f, 1.0f);
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 //	setSpecularColor(0.8f, 0.5f, 0.0f);
 	glPushMatrix();
 		glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
@@ -204,6 +247,7 @@ void GundamModel::draw()
 			if (VAL(ROTATE_HEAD_Z))
 				glRotated(VAL(ROTATE_HEAD_Z), 0.0, 0.0, 1.0);
 			VAL(HEAD2) ? drawHead2() : drawHead();
+			glTranslated(0.0, headSize[1] + headSize[1] / 6, 0.0);
 		glPopMatrix();
 
 		if (VAL(RIGHT_ARM_LINK_MOVEMENT)) {
@@ -229,9 +273,12 @@ void GundamModel::draw()
 				    //draw right lower arm
 					glTranslated(0.0, rightUpperArmSize[1], 0.0);
 					VAL(LOWERARM2) ? drawRightLowerArm2() : drawRightLowerArm();
-						//draw right Foot
+						//draw right Fist
 						glTranslated(0.0, rightLowerArmSize[1], 0.0);
 						drawRightFist();
+						glTranslated(0.0,rightFistSize[1], 0.0);
+						glRotated(90, 1.0, 0.0, 0.0);
+						drawHammer();
 		glPopMatrix();
 
 		//draw left arm
@@ -252,7 +299,7 @@ void GundamModel::draw()
 			//draw left lower arm
 			glTranslated(0.0, leftUpperArmSize[1], 0.0);
 			VAL(LOWERARM2) ? drawLeftLowerArm2() : drawLeftLowerArm();
-			//draw left Foot
+			//draw left Fist
 			glTranslated(0.0, leftLowerArmSize[1], 0.0);
 			drawLeftFist();
 		glPopMatrix();
@@ -355,7 +402,7 @@ void GundamModel::drawHead(){
 			drawBox(1, 1, 1);
 		glPopMatrix();
 		//draw head
-		setDiffuseColor(COLOR_GREEN);
+		setDiffuseColor(COLOR_YELLOW);
 		glPushMatrix();
 			glTranslated(-headSize[0] / 2, headSize[1]/6, -headSize[2] / 2);
 			glScaled(headSize[0], headSize[1], headSize[2]);
@@ -376,11 +423,28 @@ void GundamModel::drawHead2(){
 	drawBox(1, 1, 1);
 	glPopMatrix();
 	//draw head
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 	glTranslated(0.0, headSize[1] / 6 + headSize[1]/2, 0.0);
 	drawSphere(headSize[1] / 2);
 	glPopMatrix();
+	glPopMatrix();
+}
+
+void GundamModel::drawHammer(){
+	glPushMatrix();
+	glTranslated(-0.5, 0.0, 0.0);
+	//draw hammer handle
+	setDiffuseColor(COLOR_WHITE);
+	glRotated(-90, 1.0, 0.0, 0.0);
+	drawCylinder(hammerSize[0] * 3, hammerSize[1] / 10, hammerSize[2] / 10);
+	glTranslated(0.0, 0.0, hammerSize[0] * 3);
+	//draw hammer head
+	glTranslated(0.0, -hammerSize[1] / 2,0.0);
+	float controlPoints[4][3] = {
+		{ -hammerSize[0]/2, 0.0, 0.0 }, { -hammerSize[0]/3, hammerSize[1], 0.0 },
+		{ hammerSize[0] / 3, 0.0, 0.0 }, { hammerSize[0] / 2, hammerSize[1], 0.0} };
+	drawRotatingCurve(controlPoints, 0.0, 1.0, 0.0);
 	glPopMatrix();
 }
 
@@ -481,7 +545,7 @@ void GundamModel::drawRightUpperArm(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightLowerArm(){
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 		glTranslated(-rightLowerArmSize[0] / 2 -0.5, 0, -rightLowerArmSize[2] / 2);
 		glScaled(rightLowerArmSize[0], rightLowerArmSize[1], rightLowerArmSize[2]);
@@ -492,7 +556,7 @@ void GundamModel::drawRightLowerArm(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightLowerArm2(){
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 	int triangleNumber = 5;
 	double triangleWidthX = rightLowerArmSize[0] / triangleNumber;
@@ -700,7 +764,7 @@ void GundamModel::drawLeftUpperArm(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftLowerArm(){
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 		glTranslated(-leftLowerArmSize[0] / 2 + 0.5 , 0, -leftLowerArmSize[2] / 2);
 		glScaled(leftLowerArmSize[0], leftLowerArmSize[1], leftLowerArmSize[2]);
@@ -709,7 +773,7 @@ void GundamModel::drawLeftLowerArm(){
 }
 
 void GundamModel::drawLeftLowerArm2(){
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 	int triangleNumber = 5;
 	double triangleWidthX = leftLowerArmSize[0] / triangleNumber;
@@ -836,7 +900,7 @@ void GundamModel::drawRightThigh(){
 void GundamModel::drawRightThigh2(){
 	glPushMatrix();
 
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 
 	glRotated(-90, 1.0, 0.0, 0.0);
 	drawCylinder(rightThighSize[1], (rightThighSize[0] + rightThighSize[2]) / 4, (rightThighSize[0] + rightThighSize[2]) / 4);
@@ -857,7 +921,7 @@ void GundamModel::drawRightUpperLeg(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightLowerLeg(){
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 		glTranslated(-rightLowerLegSize[0] / 2, 0, -rightLowerLegSize[2] / 2);
 		glScaled(rightLowerLegSize[0], rightLowerLegSize[1], rightLowerLegSize[2]);
@@ -867,7 +931,7 @@ void GundamModel::drawRightLowerLeg(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightLowerLeg2(){
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 	int triangleNumber = 5;
 	double triangleWidthX = rightLowerLegSize[0] / triangleNumber;
@@ -995,7 +1059,7 @@ void GundamModel::drawLeftThigh(){
 void GundamModel::drawLeftThigh2(){
 	glPushMatrix();
 
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 
 	glRotated(-90, 1.0, 0.0, 0.0);
 	drawCylinder(leftThighSize[1], (leftThighSize[0] + leftThighSize[2]) / 4, (leftThighSize[0] + leftThighSize[2]) / 4);
@@ -1017,7 +1081,7 @@ void GundamModel::drawLeftUpperLeg(){
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftLowerLeg(){
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 		glTranslated(-leftLowerLegSize[0] / 2, 0, -leftLowerLegSize[2] / 2);
 		glScaled(leftLowerLegSize[0], leftLowerLegSize[1], leftLowerLegSize[2]);
@@ -1025,7 +1089,7 @@ void GundamModel::drawLeftLowerLeg(){
 	glPopMatrix();
 }
 void GundamModel::drawLeftLowerLeg2(){
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_YELLOW);
 	glPushMatrix();
 	int triangleNumber = 5;
 	double triangleWidthX = leftLowerLegSize[0] / triangleNumber;
@@ -1136,6 +1200,7 @@ void GundamModel::drawLeftFoot(){
 	glPopMatrix();
 }
 
+
 int main()
 {
 	// Initialize the controls
@@ -1167,6 +1232,7 @@ int main()
 	controls[LOWERBODY2] = ModelerControl("Lower Body Type 2?", 0, 1, 1, 0);
 	controls[THIGH2] = ModelerControl("Thigh Type 2?", 0, 1, 1, 0);
 	controls[LOWERLEG2] = ModelerControl("Lower Leg Type 2?", 0, 1, 1, 0);
+	controls[HAMMER] = ModelerControl("Use Hammer?", 0, 1, 1, 0);
 
 	ModelerApplication::Instance()->Init(&createGundamModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
