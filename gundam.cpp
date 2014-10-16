@@ -4,7 +4,7 @@
 #include "modelerapp.h"
 #include "modelerdraw.h"
 #include <FL/gl.h>
-
+#include <math.h>
 #include "modelerglobals.h"
 
 // To make a GundamModel, we inherit off of ModelerView
@@ -39,27 +39,38 @@ private:
 	double leftFootSize[3];
 
 	void drawUpperBody();
+	void drawUpperBody2();
 	void drawLowerBody();
+	void drawLowerBody2();
 	void drawHead();
+	void drawHead2();
 
 	void drawRightShoulder();
+	void drawRightShoulder2();
 	void drawRightUpperArm();
 	void drawRightLowerArm();
+	void drawRightLowerArm2();
 	void drawRightFist();
 
 	void drawLeftShoulder();
+	void drawLeftShoulder2();
 	void drawLeftUpperArm();
 	void drawLeftLowerArm();
+	void drawLeftLowerArm2();
 	void drawLeftFist();
 
 	void drawRightThigh();
+	void drawRightThigh2();
 	void drawRightUpperLeg();
 	void drawRightLowerLeg();
+	void drawRightLowerLeg2();
 	void drawRightFoot();
 
 	void drawLeftThigh();
+	void drawLeftThigh2();
 	void drawLeftUpperLeg();
 	void drawLeftLowerLeg();
+	void drawLeftLowerLeg2();
 	void drawLeftFoot();
 		
 };
@@ -67,6 +78,7 @@ private:
 //[0] is x-axis, [1] is y-axis, [2] is z-axis
 GundamModel::GundamModel(int x, int y, int w, int h, char *label)
 : ModelerView(x, y, w, h, label) {
+
 	upperBodySize[0] = 6;
 	upperBodySize[1] = 4;
 	upperBodySize[2] = 3;
@@ -181,7 +193,7 @@ void GundamModel::draw()
 		glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 		glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
 		glRotated(VAL(ROTATE_UPPER_BODY), 0.0, 1.0, 0.0);
-		drawUpperBody();
+		VAL(UPPERBODY2) ? drawUpperBody2() : drawUpperBody();
         //draw head
 		glPushMatrix();
 			glTranslated(0, upperBodySize[1], 0);
@@ -191,7 +203,7 @@ void GundamModel::draw()
 				glRotated(VAL(ROTATE_HEAD_Y), 0.0, 1.0, 0.0);
 			if (VAL(ROTATE_HEAD_Z))
 				glRotated(VAL(ROTATE_HEAD_Z), 0.0, 0.0, 1.0);
-			drawHead();
+			VAL(HEAD2) ? drawHead2() : drawHead();
 		glPopMatrix();
 
 		if (VAL(RIGHT_ARM_LINK_MOVEMENT)) {
@@ -207,7 +219,7 @@ void GundamModel::draw()
 			glRotated(-90, 0.0, 0.0, 1.0);
 			glRotated(-(VAL(RAISE_RIGHT_ARM_X)), 0.0, 1.0, 0.0);
 			glRotated(VAL(RAISE_RIGHT_ARM_Z), 0.0, 0.0, 1.0);
-			drawRightShoulder(); 
+			VAL(SHOULDER2)? drawRightShoulder2() : drawRightShoulder(); 
 				//draw right upper arm
 				glTranslated(rightShoulderSize[0]/2, rightShoulderSize[1]/2, 0);
 				if (VAL(RIGHT_FOREARM_ROTATION))
@@ -216,7 +228,7 @@ void GundamModel::draw()
 				drawRightUpperArm();
 				    //draw right lower arm
 					glTranslated(0.0, rightUpperArmSize[1], 0.0);
-					drawRightLowerArm();
+					VAL(LOWERARM2) ? drawRightLowerArm2() : drawRightLowerArm();
 						//draw right Foot
 						glTranslated(0.0, rightLowerArmSize[1], 0.0);
 						drawRightFist();
@@ -227,9 +239,10 @@ void GundamModel::draw()
 		//draw left shoulder
 			glTranslated(-upperBodySize[0] / 2, upperBodySize[1] - leftShoulderSize[0] / 2, 0);
 			glRotated(90, 0.0, 0.0, 1.0);
+
 			glRotated(VAL(RAISE_LEFT_ARM_X), 0.0, 1.0, 0.0);
 			glRotated(VAL(RAISE_LEFT_ARM_Z), 0.0, 0.0, 1.0);
-			drawLeftShoulder();
+			VAL(SHOULDER2) ? drawLeftShoulder2() : drawLeftShoulder();
 			//draw left upper arm
 			glTranslated(-leftShoulderSize[0] / 2, leftShoulderSize[1] / 2, 0);
 			if (VAL(LEFT_FOREARM_ROTATION))
@@ -238,7 +251,7 @@ void GundamModel::draw()
 			drawLeftUpperArm();
 			//draw left lower arm
 			glTranslated(0.0, leftUpperArmSize[1], 0.0);
-			drawLeftLowerArm();
+			VAL(LOWERARM2) ? drawLeftLowerArm2() : drawLeftLowerArm();
 			//draw left Foot
 			glTranslated(0.0, leftLowerArmSize[1], 0.0);
 			drawLeftFist();
@@ -249,7 +262,7 @@ void GundamModel::draw()
 		glRotated(-(VAL(ROTATE_UPPER_BODY)), 0.0, 1.0, 0.0); // To fix the position of lower body
 		glPushMatrix();
 			glRotated(180, 0.0, 0.0, 1.0);
-			drawLowerBody();
+			VAL(LOWERBODY2) ? drawLowerBody2() : drawLowerBody();
 		glPopMatrix();
 				//draw right leg
 			glPushMatrix();
@@ -257,13 +270,13 @@ void GundamModel::draw()
 				glRotated(180, 0.0, 0.0, 1.0);
 				glTranslated(-lowerBodySize[0]/2, lowerBodySize[1]/4, 0.0);
 				glTranslated(-rightThighSize[0]/2, 0.0, 0.0);
-				drawRightThigh();
+				VAL(THIGH2) ? drawRightThigh2() : drawRightThigh();
 					//draw right upper leg
 					glTranslated(0.0, rightThighSize[1], 0.0);
 					drawRightUpperLeg();
 					    //draw right lower leg
 						glTranslated(0.0, rightUpperLegSize[1], 0.0);
-						drawRightLowerLeg();
+						VAL(LOWERLEG2) ? drawRightLowerLeg2() : drawRightLowerLeg();
 						    //draw right foot
 							glTranslated(0.0, rightLowerLegSize[1], 0.0);
 							drawRightFoot();
@@ -275,16 +288,16 @@ void GundamModel::draw()
 				glRotated(180, 0.0, 0.0, 1.0);
 				glTranslated(lowerBodySize[0]/2, lowerBodySize[1] / 4, 0.0);
 				glTranslated(leftThighSize[0]/2, 0.0, 0.0);
-				drawRightThigh();
+				VAL(THIGH2) ? drawLeftThigh2() : drawLeftThigh();
 				//draw left upper leg
 				glTranslated(0.0, leftThighSize[1], 0.0);
-				drawRightUpperLeg();
+				drawLeftUpperLeg();
 				//draw left lower leg
 				glTranslated(0.0, leftUpperLegSize[1], 0.0);
-				drawRightLowerLeg();
+				VAL(LOWERLEG2) ? drawLeftLowerLeg2() : drawLeftLowerLeg();
 				//draw left foot
 				glTranslated(0.0, leftLowerLegSize[1], 0.0);
-				drawRightFoot();
+				drawLeftFoot();
 			glPopMatrix();
 		glPopMatrix();
 	glPopMatrix();
@@ -300,6 +313,14 @@ void GundamModel::drawUpperBody(){
 	glPopMatrix();
 }
 
+//OpenGl command to draw upper body
+void GundamModel::drawUpperBody2(){
+	glPushMatrix();
+	glRotated(-90, 1.0, 0.0, 0.0);
+	drawCylinder(upperBodySize[1], upperBodySize[2]/2, upperBodySize[0]/2);
+	glPopMatrix();
+}
+
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLowerBody(){
@@ -307,6 +328,16 @@ void GundamModel::drawLowerBody(){
 		glTranslated(-lowerBodySize[0] / 2, 0, -lowerBodySize[2] / 2);
 		glScaled(lowerBodySize[0], lowerBodySize[1], lowerBodySize[2]);
 		drawBox(1, 1, 1);
+	glPopMatrix();
+}
+
+//OpenGl command to draw lower body
+//TODO
+void GundamModel::drawLowerBody2(){
+	glPushMatrix();
+	glRotated(-90, 1.0, 0.0, 0.0);
+	drawCylinder(lowerBodySize[1], lowerBodySize[2]/6, lowerBodySize[0] / 2);
+	glPopMatrix();
 	glPopMatrix();
 }
 
@@ -333,6 +364,26 @@ void GundamModel::drawHead(){
 	glPopMatrix();
 }
 
+void GundamModel::drawHead2(){
+	glPushMatrix();
+	//draw neck
+
+	setDiffuseColor(COLOR_WHITE);
+	glPushMatrix();
+	glTranslated(-headSize[0] / 6, -1, -headSize[2] / 6);
+	glScaled(headSize[0] / 3, headSize[1], headSize[2] / 3);
+	//glRotated(-90, 1.0, 0.0, 0.0);
+	drawBox(1, 1, 1);
+	glPopMatrix();
+	//draw head
+	setDiffuseColor(COLOR_GREEN);
+	glPushMatrix();
+	glTranslated(0.0, headSize[1] / 6 + headSize[1]/2, 0.0);
+	drawSphere(headSize[1] / 2);
+	glPopMatrix();
+	glPopMatrix();
+}
+
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightShoulder(){
@@ -340,6 +391,79 @@ void GundamModel::drawRightShoulder(){
 		glTranslated(-rightShoulderSize[0] / 2 , 0.5, -rightShoulderSize[2] / 2);
 		glScaled(rightShoulderSize[0], rightShoulderSize[1], rightShoulderSize[2]);
 		drawBox(1, 1, 1);
+	glPopMatrix();
+}
+
+void GundamModel::drawRightShoulder2(){
+	glPushMatrix();
+	
+	rightShoulderSize[0] *= 1.5;
+	rightShoulderSize[1] *= 1.5;
+	rightShoulderSize[2] *= 1;
+	glTranslated(0.0, 0.5, 0.0);
+	glPushMatrix();
+	//draw middle part
+	drawTriangle(-rightShoulderSize[0] / 2, 0.0, -rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 2, rightShoulderSize[1], -rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 2, 0.0, -rightShoulderSize[2] / 2);
+	drawTriangle(rightShoulderSize[0] / 2, 0.0, rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 2, rightShoulderSize[1], rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 2, 0.0, rightShoulderSize[2] / 2);
+
+	glTranslated(-rightShoulderSize[0] / 2, 0.0, -rightShoulderSize[2] / 2);
+	drawBox(0.1f, rightShoulderSize[1], rightShoulderSize[2]);
+	drawBox(rightShoulderSize[0], 0.1f, rightShoulderSize[2]);
+	glTranslated(0.0, rightShoulderSize[1], 0.0);
+	glRotated(-atan2(rightShoulderSize[1], rightShoulderSize[0]) * 180 / M_PI, 0.0, 0.0, 1.0);
+	drawBox(sqrt(rightShoulderSize[0]*rightShoulderSize[0] + rightShoulderSize[1]*rightShoulderSize[1]), 0.1f, rightShoulderSize[2]);
+	glPopMatrix();
+
+	//draw upper part
+	glPushMatrix();
+	glTranslated(-rightShoulderSize[0] / 2, rightShoulderSize[1] / 4, 0.0);
+	glRotated(90, 0.0, 0.0, 1.0);
+	drawTriangle(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2
+		);
+	drawTriangle(rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		-rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2);
+	drawTriangle(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		- rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2);
+	drawTriangle(rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2);
+	glTranslated(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2);
+	drawBox(rightShoulderSize[0]/2, 0.1f, rightShoulderSize[2]);
+	glPopMatrix();
+
+	//draw lower part
+	glPushMatrix();
+	glTranslated(0.0, rightShoulderSize[1] / 2, 0.0);
+	glRotated(-atan2(rightShoulderSize[1], rightShoulderSize[0]) * 180 / M_PI, 0.0, 0.0, 1.0);
+	drawTriangle(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2
+
+		);
+	drawTriangle(rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2,
+		- rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		-rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2);
+	drawTriangle(-rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0, 
+		rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2,
+		rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2);
+	drawTriangle(-rightShoulderSize[0] / 4, 0.0, rightShoulderSize[2] / 2,
+		-rightShoulderSize[0] / 4, rightShoulderSize[1] / 2, 0.0,
+		-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2);
+	glTranslated(-rightShoulderSize[0] / 4, 0.0, -rightShoulderSize[2] / 2);
+	drawBox(rightShoulderSize[0] / 2, 0.1f, rightShoulderSize[2]);
+	glPopMatrix();
+
+	rightShoulderSize[0] /= 1.5;
+	rightShoulderSize[1] /= 1.5;
+	rightShoulderSize[2] /= 1;
 	glPopMatrix();
 }
 
@@ -367,6 +491,113 @@ void GundamModel::drawRightLowerArm(){
 
 //OpenGl command to draw lower body
 //TODO
+void GundamModel::drawRightLowerArm2(){
+	setDiffuseColor(COLOR_GREEN);
+	glPushMatrix();
+	int triangleNumber = 5;
+	double triangleWidthX = rightLowerArmSize[0] / triangleNumber;
+	double triangleWidthY = rightLowerArmSize[1] / triangleNumber;
+	double triangleWidthZ = rightLowerArmSize[2] / triangleNumber;
+	double triangleHeight = 0.2;
+	glTranslated(-0.5, 0.0, 0.0);
+	for (int j = 0; j < triangleNumber; j += 1){
+		for (int i = 0; i < triangleNumber; i += 1){
+			//draw front
+			drawTriangle(
+			-rightLowerArmSize[0]/2 + (i+1)*triangleWidthX, j*triangleWidthY, rightLowerArmSize[2]/2,
+			-rightLowerArmSize[0]/2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY/2 + (j)*triangleWidthY,  rightLowerArmSize[2]/2 + triangleHeight,
+			-rightLowerArmSize[0]/2 + (i)*triangleWidthX, j*triangleWidthY, rightLowerArmSize[2]/2);
+
+			drawTriangle(
+				-rightLowerArmSize[0]/2 + (i + 1)*triangleWidthX, (j+1)*triangleWidthY, rightLowerArmSize[2]/2,
+				-rightLowerArmSize[0]/2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY,  rightLowerArmSize[2]/2 + triangleHeight,
+				-rightLowerArmSize[0]/2 + (i + 1)*triangleWidthX, j*triangleWidthY, rightLowerArmSize[2]/2);
+
+			drawTriangle(
+				-rightLowerArmSize[0]/2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY,  rightLowerArmSize[2]/2 + triangleHeight,
+				-rightLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2,
+				-rightLowerArmSize[0]/2 + (i)*triangleWidthX, (j+1)*triangleWidthY, rightLowerArmSize[2]/2);
+
+			drawTriangle(
+				-rightLowerArmSize[0]/2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY,  rightLowerArmSize[2]/2 + triangleHeight,
+				-rightLowerArmSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2,
+				-rightLowerArmSize[0]/2 + (i)*triangleWidthX, j*triangleWidthY, rightLowerArmSize[2]/2);
+
+			//draw back
+			drawTriangle(	
+				-rightLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -rightLowerArmSize[2] / 2 - triangleHeight,
+				-rightLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, -rightLowerArmSize[2] / 2,
+				-rightLowerArmSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, -rightLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-rightLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -rightLowerArmSize[2] / 2 - triangleHeight,
+				-rightLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, -rightLowerArmSize[2] / 2,
+				-rightLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, -rightLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-rightLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, -rightLowerArmSize[2] / 2,
+				-rightLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -rightLowerArmSize[2] / 2 - triangleHeight,
+				-rightLowerArmSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, -rightLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-rightLowerArmSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, -rightLowerArmSize[2] / 2,
+				-rightLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -rightLowerArmSize[2] / 2 - triangleHeight,
+				-rightLowerArmSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, -rightLowerArmSize[2] / 2);
+
+			//draw right
+			drawTriangle(
+				rightLowerArmSize[0] / 2, j*triangleWidthY, rightLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				rightLowerArmSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				rightLowerArmSize[0] / 2, j*triangleWidthY, rightLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				rightLowerArmSize[0] / 2, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				rightLowerArmSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				rightLowerArmSize[0] / 2, j*triangleWidthY, rightLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ);
+
+			drawTriangle(
+				rightLowerArmSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				rightLowerArmSize[0] / 2, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				rightLowerArmSize[0] / 2, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(			
+				rightLowerArmSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				rightLowerArmSize[0] / 2, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2 - (i)*triangleWidthZ,
+				rightLowerArmSize[0] / 2, (j)*triangleWidthY, rightLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			//draw left
+			drawTriangle(
+				-rightLowerArmSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-rightLowerArmSize[0] / 2, j*triangleWidthY, rightLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-rightLowerArmSize[0] / 2, j*triangleWidthY, rightLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				-rightLowerArmSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-rightLowerArmSize[0] / 2, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-rightLowerArmSize[0] / 2, j*triangleWidthY, rightLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ);
+
+			drawTriangle(
+				-rightLowerArmSize[0] / 2, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-rightLowerArmSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-rightLowerArmSize[0] / 2, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				-rightLowerArmSize[0] / 2, (j + 1)*triangleWidthY, rightLowerArmSize[2] / 2 - (i)*triangleWidthZ,
+				-rightLowerArmSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-rightLowerArmSize[0] / 2, (j)*triangleWidthY, rightLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+		}
+	}
+	glTranslated(-rightLowerArmSize[0] / 2, 0.0, -rightLowerArmSize[2]/2);
+	drawBox(rightLowerArmSize[0], 0.1f, rightLowerArmSize[2]);
+	glTranslated(0.0, rightLowerArmSize[1], 0.0);
+	drawBox(rightLowerArmSize[0], 0.1f, rightLowerArmSize[2]);
+	glPopMatrix();
+}
+
+
+//OpenGl command to draw lower body
+//TODO
 void GundamModel::drawRightFist(){
 	glPushMatrix();
 		glTranslated(-rightFistSize[0] / 2 -0.5, 0.25, -rightFistSize[2] / 2);
@@ -382,6 +613,76 @@ void GundamModel::drawLeftShoulder(){
 		glTranslated(-leftShoulderSize[0] / 2, 0.5, -leftShoulderSize[2] / 2);
 		glScaled(leftShoulderSize[0], leftShoulderSize[1], leftShoulderSize[2]);
 		drawBox(1, 1, 1);
+	glPopMatrix();
+}
+
+void GundamModel::drawLeftShoulder2(){
+	glPushMatrix();
+	leftShoulderSize[0] *= 1.5;
+	leftShoulderSize[1] *= 1.5;
+	leftShoulderSize[2] *= 1;
+	glTranslated(0.0, 0.5, 0.0);
+	glPushMatrix();
+	//draw middle part
+	drawTriangle(-leftShoulderSize[0] / 2, 0.0, -leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 2, leftShoulderSize[1], -leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 2, 0.0, -leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 2, 0.0, leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 2, leftShoulderSize[1], leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 2, 0.0, leftShoulderSize[2] / 2);
+
+	glTranslated(-leftShoulderSize[0] / 2, 0.0, -leftShoulderSize[2] / 2);
+	drawBox(leftShoulderSize[0], 0.1f, leftShoulderSize[2]);
+	glTranslated(leftShoulderSize[0], 0.0, 0.0);
+	drawBox(0.1f, leftShoulderSize[1], leftShoulderSize[2]);
+	glTranslated(-leftShoulderSize[0], 0.0, 0.0);
+	glRotated(atan2(leftShoulderSize[1], leftShoulderSize[0]) * 180 / M_PI, 0.0, 0.0, 1.0);
+	drawBox(sqrt(leftShoulderSize[0] * leftShoulderSize[0] + leftShoulderSize[1] * leftShoulderSize[1]), 0.1f, leftShoulderSize[2]);
+	glPopMatrix();
+
+	//draw upper part
+	glPushMatrix();
+	glTranslated(leftShoulderSize[0] / 2, leftShoulderSize[1] / 4, 0.0);
+	glRotated(-90, 0.0, 0.0, 1.0);
+	drawTriangle(-leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		-leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2, 
+		-leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2);
+	drawTriangle(-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0);
+	glTranslated(-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawBox(leftShoulderSize[0] / 2, 0.1f, leftShoulderSize[2]);
+	glPopMatrix();
+
+	//draw lower part
+	glPushMatrix();
+	glTranslated(0.0, leftShoulderSize[1] / 2, 0.0);
+	glRotated(atan2(leftShoulderSize[1], leftShoulderSize[0]) * 180 / M_PI, 0.0, 0.0, 1.0);
+	drawTriangle(leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2,
+		-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		-leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2);
+	drawTriangle(-leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawTriangle(leftShoulderSize[0] / 4, leftShoulderSize[1] / 2, 0.0,
+		leftShoulderSize[0] / 4, 0.0, leftShoulderSize[2] / 2,
+		leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	glTranslated(-leftShoulderSize[0] / 4, 0.0, -leftShoulderSize[2] / 2);
+	drawBox(leftShoulderSize[0] / 2, 0.1f, leftShoulderSize[2]);
+	glPopMatrix();
+
+	leftShoulderSize[0] /= 1.5;
+	leftShoulderSize[1] /= 1.5;
+	leftShoulderSize[2] /= 1;
 	glPopMatrix();
 }
 
@@ -407,6 +708,109 @@ void GundamModel::drawLeftLowerArm(){
 	glPopMatrix();
 }
 
+void GundamModel::drawLeftLowerArm2(){
+	setDiffuseColor(COLOR_GREEN);
+	glPushMatrix();
+	int triangleNumber = 5;
+	double triangleWidthX = leftLowerArmSize[0] / triangleNumber;
+	double triangleWidthY = leftLowerArmSize[1] / triangleNumber;
+	double triangleWidthZ = leftLowerArmSize[2] / triangleNumber;
+	double triangleHeight = 0.2;
+	glTranslated(0.5, 0.0, 0.0);
+	for (int j = 0; j < triangleNumber; j += 1){
+		for (int i = 0; i < triangleNumber; i += 1){
+			//draw front
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, leftLowerArmSize[2] / 2,
+				-leftLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 + triangleHeight,
+				-leftLowerArmSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, leftLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2,
+				-leftLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 + triangleHeight,
+				-leftLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, leftLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 + triangleHeight,
+				-leftLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2,
+				-leftLowerArmSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 + triangleHeight,
+				-leftLowerArmSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2,
+				-leftLowerArmSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, leftLowerArmSize[2] / 2);
+
+			//draw back
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -leftLowerArmSize[2] / 2 - triangleHeight,
+				-leftLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, -leftLowerArmSize[2] / 2,
+				-leftLowerArmSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, -leftLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -leftLowerArmSize[2] / 2 - triangleHeight,
+				-leftLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, -leftLowerArmSize[2] / 2,
+				-leftLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, -leftLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, -leftLowerArmSize[2] / 2,
+				-leftLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -leftLowerArmSize[2] / 2 - triangleHeight,
+				-leftLowerArmSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, -leftLowerArmSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, -leftLowerArmSize[2] / 2,
+				-leftLowerArmSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -leftLowerArmSize[2] / 2 - triangleHeight,
+				-leftLowerArmSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, -leftLowerArmSize[2] / 2);
+
+			//draw left
+			drawTriangle(
+				leftLowerArmSize[0] / 2, j*triangleWidthY, leftLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				leftLowerArmSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				leftLowerArmSize[0] / 2, j*triangleWidthY, leftLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				leftLowerArmSize[0] / 2, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				leftLowerArmSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				leftLowerArmSize[0] / 2, j*triangleWidthY, leftLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ);
+
+			drawTriangle(
+				leftLowerArmSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				leftLowerArmSize[0] / 2, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				leftLowerArmSize[0] / 2, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				leftLowerArmSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				leftLowerArmSize[0] / 2, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2 - (i)*triangleWidthZ,
+				leftLowerArmSize[0] / 2, (j)*triangleWidthY, leftLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			//draw left
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-leftLowerArmSize[0] / 2, j*triangleWidthY, leftLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-leftLowerArmSize[0] / 2, j*triangleWidthY, leftLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-leftLowerArmSize[0] / 2, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-leftLowerArmSize[0] / 2, j*triangleWidthY, leftLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-leftLowerArmSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-leftLowerArmSize[0] / 2, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				-leftLowerArmSize[0] / 2, (j + 1)*triangleWidthY, leftLowerArmSize[2] / 2 - (i)*triangleWidthZ,
+				-leftLowerArmSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerArmSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-leftLowerArmSize[0] / 2, (j)*triangleWidthY, leftLowerArmSize[2] / 2 - (i)*triangleWidthZ);
+
+		}
+	}
+	glTranslated(-leftLowerArmSize[0] / 2, 0.0, -leftLowerArmSize[2] / 2);
+	drawBox(leftLowerArmSize[0], 0.1f, leftLowerArmSize[2]);
+	glTranslated(0.0, leftLowerArmSize[1], 0.0);
+	drawBox(leftLowerArmSize[0], 0.1f, leftLowerArmSize[2]);
+	glPopMatrix();
+}
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftFist(){
@@ -429,6 +833,18 @@ void GundamModel::drawRightThigh(){
 
 //OpenGl command to draw lower body
 //TODO
+void GundamModel::drawRightThigh2(){
+	glPushMatrix();
+
+	setDiffuseColor(COLOR_GREEN);
+
+	glRotated(-90, 1.0, 0.0, 0.0);
+	drawCylinder(rightThighSize[1], (rightThighSize[0] + rightThighSize[2]) / 4, (rightThighSize[0] + rightThighSize[2]) / 4);
+
+	glPopMatrix();
+}
+//OpenGl command to draw lower body
+//TODO
 void GundamModel::drawRightUpperLeg(){
 	setDiffuseColor(COLOR_WHITE);
 	glPushMatrix();
@@ -448,7 +864,110 @@ void GundamModel::drawRightLowerLeg(){
 		drawBox(1, 1, 1);
 	glPopMatrix();
 }
+//OpenGl command to draw lower body
+//TODO
+void GundamModel::drawRightLowerLeg2(){
+	setDiffuseColor(COLOR_GREEN);
+	glPushMatrix();
+	int triangleNumber = 5;
+	double triangleWidthX = rightLowerLegSize[0] / triangleNumber;
+	double triangleWidthY = rightLowerLegSize[1] / triangleNumber;
+	double triangleWidthZ = rightLowerLegSize[2] / triangleNumber;
+	double triangleHeight = 0.2;
+	for (int j = 0; j < triangleNumber; j += 1){
+		for (int i = 0; i < triangleNumber; i += 1){
+			//draw front
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, rightLowerLegSize[2] / 2,
+				-rightLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 + triangleHeight,
+				-rightLowerLegSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, rightLowerLegSize[2] / 2);
 
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2,
+				-rightLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 + triangleHeight,
+				-rightLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, rightLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 + triangleHeight,
+				-rightLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2,
+				-rightLowerLegSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 + triangleHeight,
+				-rightLowerLegSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2,
+				-rightLowerLegSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, rightLowerLegSize[2] / 2);
+
+			//draw back
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -rightLowerLegSize[2] / 2 - triangleHeight,
+				-rightLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, -rightLowerLegSize[2] / 2,
+				-rightLowerLegSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, -rightLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -rightLowerLegSize[2] / 2 - triangleHeight,
+				-rightLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, -rightLowerLegSize[2] / 2,
+				-rightLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, -rightLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, -rightLowerLegSize[2] / 2,
+				-rightLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -rightLowerLegSize[2] / 2 - triangleHeight,
+				-rightLowerLegSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, -rightLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, -rightLowerLegSize[2] / 2,
+				-rightLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -rightLowerLegSize[2] / 2 - triangleHeight,
+				-rightLowerLegSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, -rightLowerLegSize[2] / 2);
+
+			//draw right
+			drawTriangle(
+				rightLowerLegSize[0] / 2, j*triangleWidthY, rightLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				rightLowerLegSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				rightLowerLegSize[0] / 2, j*triangleWidthY, rightLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				rightLowerLegSize[0] / 2, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				rightLowerLegSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				rightLowerLegSize[0] / 2, j*triangleWidthY, rightLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ);
+
+			drawTriangle(
+				rightLowerLegSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				rightLowerLegSize[0] / 2, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				rightLowerLegSize[0] / 2, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				rightLowerLegSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				rightLowerLegSize[0] / 2, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2 - (i)*triangleWidthZ,
+				rightLowerLegSize[0] / 2, (j)*triangleWidthY, rightLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			//draw left
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-rightLowerLegSize[0] / 2, j*triangleWidthY, rightLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-rightLowerLegSize[0] / 2, j*triangleWidthY, rightLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				-rightLowerLegSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-rightLowerLegSize[0] / 2, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-rightLowerLegSize[0] / 2, j*triangleWidthY, rightLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ);
+
+			drawTriangle(
+				-rightLowerLegSize[0] / 2, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-rightLowerLegSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-rightLowerLegSize[0] / 2, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				-rightLowerLegSize[0] / 2, (j + 1)*triangleWidthY, rightLowerLegSize[2] / 2 - (i)*triangleWidthZ,
+				-rightLowerLegSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, rightLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-rightLowerLegSize[0] / 2, (j)*triangleWidthY, rightLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+		}
+	}
+	glTranslated(-rightLowerLegSize[0] / 2, 0.0, -rightLowerLegSize[2] / 2);
+	drawBox(rightLowerLegSize[0], 0.1f, rightLowerLegSize[2]);
+	glTranslated(0.0, rightLowerLegSize[1], 0.0);
+	drawBox(rightLowerLegSize[0], 0.1f, rightLowerLegSize[2]);
+	glPopMatrix();
+}
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawRightFoot(){
@@ -470,6 +989,19 @@ void GundamModel::drawLeftThigh(){
 	glPopMatrix();
 }
 
+
+//OpenGl command to draw lower body
+//TODO
+void GundamModel::drawLeftThigh2(){
+	glPushMatrix();
+
+	setDiffuseColor(COLOR_GREEN);
+
+	glRotated(-90, 1.0, 0.0, 0.0);
+	drawCylinder(leftThighSize[1], (leftThighSize[0] + leftThighSize[2]) / 4, (leftThighSize[0] + leftThighSize[2]) / 4);
+
+	glPopMatrix();
+}
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftUpperLeg(){
@@ -481,6 +1013,7 @@ void GundamModel::drawLeftUpperLeg(){
 	glPopMatrix();
 }
 
+
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftLowerLeg(){
@@ -491,7 +1024,108 @@ void GundamModel::drawLeftLowerLeg(){
 		drawBox(1, 1, 1);
 	glPopMatrix();
 }
+void GundamModel::drawLeftLowerLeg2(){
+	setDiffuseColor(COLOR_GREEN);
+	glPushMatrix();
+	int triangleNumber = 5;
+	double triangleWidthX = leftLowerLegSize[0] / triangleNumber;
+	double triangleWidthY = leftLowerLegSize[1] / triangleNumber;
+	double triangleWidthZ = leftLowerLegSize[2] / triangleNumber;
+	double triangleHeight = 0.2;
+	for (int j = 0; j < triangleNumber; j += 1){
+		for (int i = 0; i < triangleNumber; i += 1){
+			//draw front
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, leftLowerLegSize[2] / 2,
+				-leftLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 + triangleHeight,
+				-leftLowerLegSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, leftLowerLegSize[2] / 2);
 
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2,
+				-leftLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 + triangleHeight,
+				-leftLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, leftLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 + triangleHeight,
+				-leftLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2,
+				-leftLowerLegSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 + triangleHeight,
+				-leftLowerLegSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2,
+				-leftLowerLegSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, leftLowerLegSize[2] / 2);
+
+			//draw back
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -leftLowerLegSize[2] / 2 - triangleHeight,
+				-leftLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, -leftLowerLegSize[2] / 2,
+				-leftLowerLegSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, -leftLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -leftLowerLegSize[2] / 2 - triangleHeight,
+				-leftLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, -leftLowerLegSize[2] / 2,
+				-leftLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, j*triangleWidthY, -leftLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 + (i + 1)*triangleWidthX, (j + 1)*triangleWidthY, -leftLowerLegSize[2] / 2,
+				-leftLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -leftLowerLegSize[2] / 2 - triangleHeight,
+				-leftLowerLegSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, -leftLowerLegSize[2] / 2);
+
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 + (i)*triangleWidthX, (j + 1)*triangleWidthY, -leftLowerLegSize[2] / 2,
+				-leftLowerLegSize[0] / 2 + triangleWidthX / 2 + (i)*triangleWidthX, triangleWidthY / 2 + (j)*triangleWidthY, -leftLowerLegSize[2] / 2 - triangleHeight,
+				-leftLowerLegSize[0] / 2 + (i)*triangleWidthX, j*triangleWidthY, -leftLowerLegSize[2] / 2);
+
+			//draw left
+			drawTriangle(
+				leftLowerLegSize[0] / 2, j*triangleWidthY, leftLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				leftLowerLegSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				leftLowerLegSize[0] / 2, j*triangleWidthY, leftLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				leftLowerLegSize[0] / 2, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				leftLowerLegSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				leftLowerLegSize[0] / 2, j*triangleWidthY, leftLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ);
+
+			drawTriangle(
+				leftLowerLegSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				leftLowerLegSize[0] / 2, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				leftLowerLegSize[0] / 2, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				leftLowerLegSize[0] / 2 + triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				leftLowerLegSize[0] / 2, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2 - (i)*triangleWidthZ,
+				leftLowerLegSize[0] / 2, (j)*triangleWidthY, leftLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			//draw left
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-leftLowerLegSize[0] / 2, j*triangleWidthY, leftLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-leftLowerLegSize[0] / 2, j*triangleWidthY, leftLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				-leftLowerLegSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-leftLowerLegSize[0] / 2, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-leftLowerLegSize[0] / 2, j*triangleWidthY, leftLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ);
+
+			drawTriangle(
+				-leftLowerLegSize[0] / 2, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2 - (i + 1)*triangleWidthZ,
+				-leftLowerLegSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-leftLowerLegSize[0] / 2, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+			drawTriangle(
+				-leftLowerLegSize[0] / 2, (j + 1)*triangleWidthY, leftLowerLegSize[2] / 2 - (i)*triangleWidthZ,
+				-leftLowerLegSize[0] / 2 - triangleHeight, triangleWidthY / 2 + (j)*triangleWidthY, leftLowerLegSize[2] / 2 - triangleWidthZ / 2 - (i)*triangleWidthZ,
+				-leftLowerLegSize[0] / 2, (j)*triangleWidthY, leftLowerLegSize[2] / 2 - (i)*triangleWidthZ);
+
+		}
+	}
+	glTranslated(-leftLowerLegSize[0] / 2, 0.0, -leftLowerLegSize[2] / 2);
+	drawBox(leftLowerLegSize[0], 0.1f, leftLowerLegSize[2]);
+	glTranslated(0.0, leftLowerLegSize[1], 0.0);
+	drawBox(leftLowerLegSize[0], 0.1f, leftLowerLegSize[2]);
+	glPopMatrix();
+}
 //OpenGl command to draw lower body
 //TODO
 void GundamModel::drawLeftFoot(){
@@ -526,6 +1160,13 @@ int main()
 	controls[LEFT_ARM_LINK_MOVEMENT] = ModelerControl("Left arm link movement", 0, 40, 1, 0);
 	controls[RIGHT_ARM_LINK_MOVEMENT] = ModelerControl("Right arm link movement", 0, 40, 1, 0);
 	controls[LIGHT_INTENSITY] = ModelerControl("Light intensity", 0, 200, 5, 100);
+	controls[SHOULDER2] = ModelerControl("Shoulder Type 2?", 0, 1, 1, 0);
+	controls[LOWERARM2] = ModelerControl("Lower Arm Type 2?", 0, 1, 1, 0);
+	controls[HEAD2] = ModelerControl("Head Type 2?", 0, 1, 1, 0);
+	controls[UPPERBODY2] = ModelerControl("Upper Body Type 2?", 0, 1, 1, 0);
+	controls[LOWERBODY2] = ModelerControl("Lower Body Type 2?", 0, 1, 1, 0);
+	controls[THIGH2] = ModelerControl("Thigh Type 2?", 0, 1, 1, 0);
+	controls[LOWERLEG2] = ModelerControl("Lower Leg Type 2?", 0, 1, 1, 0);
 
 	ModelerApplication::Instance()->Init(&createGundamModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
