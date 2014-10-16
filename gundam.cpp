@@ -305,7 +305,7 @@ void GundamModel::draw()
 
 			glRotated(VAL(RAISE_LEFT_ARM_X), 0.0, 1.0, 0.0);
 			glRotated(leftShoulderAngle, 0.0, 1.0, 0.0); // For link movement
-			glRotated(VAL(RAISE_LEFT_ARM_Z), 0.0, 0.0, 1.0);
+			glRotated(-VAL(RAISE_LEFT_ARM_Z), 0.0, 0.0, 1.0);
 			VAL(SHOULDER2) ? drawLeftShoulder2() : drawLeftShoulder();
 			//draw left upper arm
 			glTranslated(-leftShoulderSize[0] / 2, leftShoulderSize[1] / 2, 0);
@@ -336,6 +336,8 @@ void GundamModel::draw()
 				glRotated(180, 0.0, 0.0, 1.0);
 				glTranslated(-lowerBodySize[0]/2, lowerBodySize[1]/4, 0.0);
 				glTranslated(-rightThighSize[0]/2, 0.0, 0.0);
+				glRotated(VAL(RAISE_RIGHT_LEG_X), 1.0, 0.0, 0.0);
+				glRotated(VAL(RAISE_RIGHT_LEG_Z), 0.0, 0.0, 1.0);
 				VAL(THIGH2) ? drawRightThigh2() : drawRightThigh();
 					//draw right upper leg
 					glTranslated(0.0, rightThighSize[1], 0.0);
@@ -354,6 +356,8 @@ void GundamModel::draw()
 				glRotated(180, 0.0, 0.0, 1.0);
 				glTranslated(lowerBodySize[0]/2, lowerBodySize[1] / 4, 0.0);
 				glTranslated(leftThighSize[0]/2, 0.0, 0.0);
+				glRotated(VAL(RAISE_LEFT_LEG_X), 1.0, 0.0, 0.0);
+				glRotated(-VAL(RAISE_LEFT_LEG_Z), 0.0, 0.0, 1.0);
 				VAL(THIGH2) ? drawLeftThigh2() : drawLeftThigh();
 				//draw left upper leg
 				glTranslated(0.0, leftThighSize[1], 0.0);
@@ -1235,6 +1239,10 @@ int main()
 	controls[RAISE_LEFT_ARM_X] = ModelerControl("Raise left arm X", -75, 90, 1, 0);
 	controls[RAISE_RIGHT_ARM_Z] = ModelerControl("Raise right arm Z", 0, 60, 1, 0);
 	controls[RAISE_LEFT_ARM_Z] = ModelerControl("Raise left arm Z", 0, 60, 1 ,0);
+	controls[RAISE_RIGHT_LEG_X] = ModelerControl("Raise right leg X", -75, 90, 1, 0);
+	controls[RAISE_LEFT_LEG_X] = ModelerControl("Raise left leg X", -75, 90, 1, 0);
+	controls[RAISE_RIGHT_LEG_Z] = ModelerControl("Raise right leg Z", 0, 60, 1, 0);
+	controls[RAISE_LEFT_LEG_Z] = ModelerControl("Raise left leg Z", 0, 60, 1, 0);
 	controls[ROTATE_HEAD_X] = ModelerControl("Rotate head X", -45, 45, 1, 0);
 	controls[ROTATE_HEAD_Y] = ModelerControl("Rotate head Y", -45, 45, 1, 0);
 	controls[ROTATE_HEAD_Z] = ModelerControl("Rotate head Z", -45, 45, 1, 0);
