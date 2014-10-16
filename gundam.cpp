@@ -176,8 +176,7 @@ void GundamModel::draw()
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor);
 	setAmbientColor(1.0f, 1.0f, 1.0f);
 	setDiffuseColor(COLOR_GREEN);
-//	setShininess(VAL(LIGHT_INTENSITY));
-	setSpecularColor(0.8f, 0.5f, 0.0f);
+//	setSpecularColor(0.8f, 0.5f, 0.0f);
 	glPushMatrix();
 		glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 		glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
@@ -195,12 +194,19 @@ void GundamModel::draw()
 			drawHead();
 		glPopMatrix();
 
+		if (VAL(RIGHT_ARM_LINK_MOVEMENT)) {
+			ModelerApplication::Instance()->SetControlValue(RAISE_RIGHT_ARM_X, VAL(RIGHT_ARM_LINK_MOVEMENT));
+			ModelerApplication::Instance()->SetControlValue(RIGHT_FOREARM_ROTATION, VAL(RIGHT_ARM_LINK_MOVEMENT));
+			//ModelerApplication::Instance()->SetControlValue()
+		}
+
 		//draw right arm
 		glPushMatrix();
 		//draw right shoulder
 			glTranslated(upperBodySize[0]/2, upperBodySize[1]-rightShoulderSize[0]/2, 0);
 			glRotated(-90, 0.0, 0.0, 1.0);
-			glRotated(-(VAL(RAISE_RIGHT_ARM)), 0.0, 1.0, 0.0);
+			glRotated(-(VAL(RAISE_RIGHT_ARM_X)), 0.0, 1.0, 0.0);
+			glRotated(VAL(RAISE_RIGHT_ARM_Z), 0.0, 0.0, 1.0);
 			drawRightShoulder(); 
 				//draw right upper arm
 				glTranslated(rightShoulderSize[0]/2, rightShoulderSize[1]/2, 0);
@@ -221,7 +227,8 @@ void GundamModel::draw()
 		//draw left shoulder
 			glTranslated(-upperBodySize[0] / 2, upperBodySize[1] - leftShoulderSize[0] / 2, 0);
 			glRotated(90, 0.0, 0.0, 1.0);
-			glRotated(VAL(RAISE_LEFT_ARM), 0.0, 1.0, 0.0);
+			glRotated(VAL(RAISE_LEFT_ARM_X), 0.0, 1.0, 0.0);
+			glRotated(VAL(RAISE_LEFT_ARM_Z), 0.0, 0.0, 1.0);
 			drawLeftShoulder();
 			//draw left upper arm
 			glTranslated(-leftShoulderSize[0] / 2, leftShoulderSize[1] / 2, 0);
@@ -507,16 +514,18 @@ int main()
 	controls[HEIGHT] = ModelerControl("Height", 10, 25, 0.1f, 1);
 	controls[ROTATE] = ModelerControl("Rotate", -135, 135, 1, 0);
 	controls[ROTATE_UPPER_BODY] = ModelerControl("Rotate upper body Y", 90, -90, 1, 0);
-	controls[RAISE_RIGHT_ARM] = ModelerControl("Raise right arm X", -75, 90, 1, 0);
-	controls[RAISE_LEFT_ARM] = ModelerControl("Raise left arm X", -75, 90, 1, 0);
+	controls[RAISE_RIGHT_ARM_X] = ModelerControl("Raise right arm X", -75, 90, 1, 0);
+	controls[RAISE_LEFT_ARM_X] = ModelerControl("Raise left arm X", -75, 90, 1, 0);
+	controls[RAISE_RIGHT_ARM_Z] = ModelerControl("Raise right arm Z", 0, 60, 1, 0);
+	controls[RAISE_LEFT_ARM_Z] = ModelerControl("Raise left arm Z", 0, 60, 1 ,0);
 	controls[ROTATE_HEAD_X] = ModelerControl("Rotate head X", -45, 45, 1, 0);
 	controls[ROTATE_HEAD_Y] = ModelerControl("Rotate head Y", -45, 45, 1, 0);
 	controls[ROTATE_HEAD_Z] = ModelerControl("Rotate head Z", -45, 45, 1, 0);
 	controls[LEFT_FOREARM_ROTATION] = ModelerControl("Rotate left forearm", -45, 45, 1, 0);
 	controls[RIGHT_FOREARM_ROTATION] = ModelerControl("Rotate right forearm", -45, 45, 1, 0);
-	controls[LEFT_ARM_JOINT_MOVEMENT] = ModelerControl("Left arm joint movement", 0, 10, 1, 0);
-	controls[RIGHT_ARM_JOINT_MOVEMENT] = ModelerControl("Right arm joint movement", 0, 10, 1, 0);
-	controls[LIGHT_INTENSITY] = ModelerControl("Light intensity", 0, 100, 5, 50);
+	controls[LEFT_ARM_LINK_MOVEMENT] = ModelerControl("Left arm link movement", 0, 40, 1, 0);
+	controls[RIGHT_ARM_LINK_MOVEMENT] = ModelerControl("Right arm link movement", 0, 40, 1, 0);
+	controls[LIGHT_INTENSITY] = ModelerControl("Light intensity", 0, 200, 5, 100);
 
 	ModelerApplication::Instance()->Init(&createGundamModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
