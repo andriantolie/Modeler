@@ -286,9 +286,11 @@ void GundamModel::draw()
 						//draw right Fist
 						glTranslated(0.0, rightLowerArmSize[1], 0.0);
 						drawRightFist();
-						glTranslated(0.0,rightFistSize[1], 0.0);
-						glRotated(90, 1.0, 0.0, 0.0);
-						drawHammer();
+						if (VAL(HAMMER)){
+							glTranslated(0.0,rightFistSize[1], 0.0);
+							glRotated(90, 1.0, 0.0, 0.0);
+							drawHammer();
+						}
 		glPopMatrix();
 
 		leftShoulderAngle = VAL(LEFT_ARM_LINK_MOVEMENT);
@@ -1227,7 +1229,6 @@ int main()
 	controls[XPOS] = ModelerControl("X Position", -20, 20, 0.1f, 0);
 	controls[YPOS] = ModelerControl("Y Position", 0, 20, 0.1f, 0);
 	controls[ZPOS] = ModelerControl("Z Position", -20, 20, 0.1f, 0);
-	controls[HEIGHT] = ModelerControl("Height", 10, 25, 0.1f, 1);
 	controls[ROTATE] = ModelerControl("Rotate", -135, 135, 1, 0);
 	controls[ROTATE_UPPER_BODY] = ModelerControl("Rotate upper body Y", 90, -90, 1, 0);
 	controls[RAISE_RIGHT_ARM_X] = ModelerControl("Raise right arm X", -75, 90, 1, 0);
