@@ -7,6 +7,8 @@
 #include <math.h>
 #include "modelerglobals.h"
 
+#define PI 3.14159265
+int iterator = 0;
 
 //draw bezier curve and rotate it around specific axis
 void drawRotatingCurve(float controlPoints[][3], double xRotationAxis, double yRotationAxis, double zRotationAxis){
@@ -83,6 +85,13 @@ private:
 	int leftShoulderAngle;
 	int leftUpperArmAngle;
 	int leftLowerArmAngle;
+	int thighCrouchAngle;
+	int legCrouchAngle;
+	int animRightThigh;
+	int animRightLowerLeg;
+	int animLeftLowerLeg;
+	int animLeftThigh;
+	int animUpperBody;
 
 	void drawUpperBody();
 	void drawUpperBody2();
@@ -119,6 +128,8 @@ private:
 	void drawLeftLowerLeg();
 	void drawLeftLowerLeg2();
 	void drawLeftFoot();
+
+	void animationIterator();
 };
 
 //[0] is x-axis, [1] is y-axis, [2] is z-axis
@@ -238,11 +249,18 @@ void GundamModel::draw()
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor);
 	setAmbientColor(1.0f, 1.0f, 1.0f);
 	setDiffuseColor(COLOR_YELLOW);
+	bool animate = ModelerApplication::Instance()->GetAnimation();
+	if (animate)
+		animationIterator();
 //	setSpecularColor(0.8f, 0.5f, 0.0f);
 	glPushMatrix();
 		glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
+		if (VAL(CROUCH))
+			glTranslated(0, -(1-cos(PI*VAL(CROUCH)*2/180))*leftThighSize[1], 0);
 		glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
 		glRotated(VAL(ROTATE_UPPER_BODY), 0.0, 1.0, 0.0);
+		if (animate)
+			glRotated(-animUpperBody, 0.0, 1.0, 0.0);
 		VAL(UPPERBODY2) ? drawUpperBody2() : drawUpperBody();
         //draw head
 		glPushMatrix();
@@ -326,6 +344,9 @@ void GundamModel::draw()
 
 		//draw lower body
 		glRotated(-(VAL(ROTATE_UPPER_BODY)), 0.0, 1.0, 0.0); // To fix the position of lower body
+		if (animate)
+			glRotated(animUpperBody/2, 0.0, 1.0, 0.0);
+
 		glPushMatrix();
 			glRotated(180, 0.0, 0.0, 1.0);
 			VAL(LOWERBODY2) ? drawLowerBody2() : drawLowerBody();
@@ -336,17 +357,31 @@ void GundamModel::draw()
 				glRotated(180, 0.0, 0.0, 1.0);
 				glTranslated(-lowerBodySize[0]/2, lowerBodySize[1]/4, 0.0);
 				glTranslated(-rightThighSize[0]/2, 0.0, 0.0);
+				if (VAL(CROUCH)) {
+					thighCrouchAngle = 2 * VAL(CROUCH);
+					glRotated(thighCrouchAngle, 1.0, 0.0, 0.0);
+				}
 				glRotated(VAL(RAISE_RIGHT_LEG_X), 1.0, 0.0, 0.0);
 				glRotated(VAL(RAISE_RIGHT_LEG_Z), 0.0, 0.0, 1.0);
+				if (animate)
+					glRotated(animRightThigh, 1.0, 0.0, 0.0);
 				VAL(THIGH2) ? drawRightThigh2() : drawRightThigh();
 					//draw right upper leg
 					glTranslated(0.0, rightThighSize[1], 0.0);
+					if (VAL(CROUCH)) {
+						legCrouchAngle = 5 * VAL(CROUCH);
+						glRotated(-legCrouchAngle, 1.0, 0.0, 0.0);
+					}
 					drawRightUpperLeg();
 					    //draw right lower leg
 						glTranslated(0.0, rightUpperLegSize[1], 0.0);
+						if (animate)
+							glRotated(-animRightLowerLeg, 1.0, 0.0, 0.0);
 						VAL(LOWERLEG2) ? drawRightLowerLeg2() : drawRightLowerLeg();
 						    //draw right foot
 							glTranslated(0.0, rightLowerLegSize[1], 0.0);
+							if (animate)
+								glRotated(-animRightThigh, 1.0, 0.0, 0.0);
 							drawRightFoot();
 			glPopMatrix();
 
@@ -356,17 +391,29 @@ void GundamModel::draw()
 				glRotated(180, 0.0, 0.0, 1.0);
 				glTranslated(lowerBodySize[0]/2, lowerBodySize[1] / 4, 0.0);
 				glTranslated(leftThighSize[0]/2, 0.0, 0.0);
+				if (VAL(CROUCH)) {
+					glRotated(thighCrouchAngle, 1.0, 0.0, 0.0);
+				}
 				glRotated(VAL(RAISE_LEFT_LEG_X), 1.0, 0.0, 0.0);
 				glRotated(-VAL(RAISE_LEFT_LEG_Z), 0.0, 0.0, 1.0);
+				if (animate)
+					glRotated(animLeftThigh, 1.0, 0.0, 0.0);
 				VAL(THIGH2) ? drawLeftThigh2() : drawLeftThigh();
 				//draw left upper leg
 				glTranslated(0.0, leftThighSize[1], 0.0);
+				if (VAL(CROUCH)) {
+						glRotated(-legCrouchAngle, 1.0, 0.0, 0.0);
+					}
 				drawLeftUpperLeg();
 				//draw left lower leg
 				glTranslated(0.0, leftUpperLegSize[1], 0.0);
+				if (animate)
+					glRotated(-animLeftLowerLeg, 1.0, 0.0, 0.0);
 				VAL(LOWERLEG2) ? drawLeftLowerLeg2() : drawLeftLowerLeg();
 				//draw left foot
 				glTranslated(0.0, leftLowerLegSize[1], 0.0);
+				if (animate)
+					glRotated(-animLeftThigh, 1.0, 0.0, 0.0);
 				drawLeftFoot();
 			glPopMatrix();
 		glPopMatrix();
@@ -1223,6 +1270,48 @@ void GundamModel::drawLeftFoot(){
 	glPopMatrix();
 }
 
+void GundamModel::animationIterator() {
+	if (iterator==60) {
+		iterator = 0;
+	}
+//	printf("%d \n", iterator);
+	if (iterator < 15) {
+		animRightThigh = (iterator + 1) * 2;
+		animRightLowerLeg = iterator + 1;
+		animLeftThigh = -(iterator + 1) * 2;
+		animLeftLowerLeg = 0;
+		animUpperBody = - (iterator + 1);
+		++iterator;
+		return;
+	}
+	else if (iterator < 30) {
+		animRightThigh = (30 - iterator) * 2;
+		animRightLowerLeg = 30 - iterator;
+		animLeftThigh = -(30 - iterator) * 2;
+		animUpperBody = -(30 - iterator);
+		++iterator;
+		return;
+	}
+	else if (iterator < 45) {
+		animLeftThigh = (iterator - 29) * 2;
+		animLeftLowerLeg = iterator - 29;
+		animRightThigh = -(iterator - 29) * 2;
+		animRightLowerLeg = 0;
+		animUpperBody = iterator - 29;
+		++iterator;
+		return;
+	}
+	else if (iterator < 60) {
+		animLeftThigh = (60 - iterator) * 2;
+		animLeftLowerLeg = 60 - iterator;
+		animRightThigh = -(60 - iterator) * 2;
+		animUpperBody = 60 - iterator;
+		++iterator;
+		return;
+	}
+	
+	
+}
 
 int main()
 {
@@ -1250,6 +1339,7 @@ int main()
 	controls[RIGHT_FOREARM_ROTATION] = ModelerControl("Rotate right forearm", -45, 45, 1, 0);
 	controls[LEFT_ARM_LINK_MOVEMENT] = ModelerControl("Left arm link movement", 0, 40, 1, 0);
 	controls[RIGHT_ARM_LINK_MOVEMENT] = ModelerControl("Right arm link movement", 0, 40, 1, 0);
+	controls[CROUCH] = ModelerControl("Crouch", 0, 30, 1, 0);
 	controls[LIGHT_INTENSITY] = ModelerControl("Light intensity", 0, 200, 5, 100);
 	controls[SHOULDER2] = ModelerControl("Shoulder Type 2?", 0, 1, 1, 0);
 	controls[LOWERARM2] = ModelerControl("Lower Arm Type 2?", 0, 1, 1, 0);
