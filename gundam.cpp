@@ -77,6 +77,13 @@ private:
 	double leftLowerLegSize[3];
 	double leftFootSize[3];
 
+	int rightShoulderAngle;
+	int rightUpperArmAngle;
+	int rightLowerArmAngle;
+	int leftShoulderAngle;
+	int leftUpperArmAngle;
+	int leftLowerArmAngle;
+
 	void drawUpperBody();
 	void drawUpperBody2();
 	void drawLowerBody();
@@ -250,11 +257,11 @@ void GundamModel::draw()
 			glTranslated(0.0, headSize[1] + headSize[1] / 6, 0.0);
 		glPopMatrix();
 
-		if (VAL(RIGHT_ARM_LINK_MOVEMENT)) {
-			ModelerApplication::Instance()->SetControlValue(RAISE_RIGHT_ARM_X, VAL(RIGHT_ARM_LINK_MOVEMENT));
-			ModelerApplication::Instance()->SetControlValue(RIGHT_FOREARM_ROTATION, VAL(RIGHT_ARM_LINK_MOVEMENT));
-			//ModelerApplication::Instance()->SetControlValue()
-		}
+		
+		rightShoulderAngle = VAL(RIGHT_ARM_LINK_MOVEMENT);
+		rightUpperArmAngle = VAL(RIGHT_ARM_LINK_MOVEMENT);
+		rightLowerArmAngle = 1.5*VAL(RIGHT_ARM_LINK_MOVEMENT);
+		
 
 		//draw right arm
 		glPushMatrix();
@@ -262,16 +269,19 @@ void GundamModel::draw()
 			glTranslated(upperBodySize[0]/2, upperBodySize[1]-rightShoulderSize[0]/2, 0);
 			glRotated(-90, 0.0, 0.0, 1.0);
 			glRotated(-(VAL(RAISE_RIGHT_ARM_X)), 0.0, 1.0, 0.0);
+			glRotated(-rightShoulderAngle, 0.0, 1.0, 0.0); // For link movement
 			glRotated(VAL(RAISE_RIGHT_ARM_Z), 0.0, 0.0, 1.0);
 			VAL(SHOULDER2)? drawRightShoulder2() : drawRightShoulder(); 
 				//draw right upper arm
 				glTranslated(rightShoulderSize[0]/2, rightShoulderSize[1]/2, 0);
 				if (VAL(RIGHT_FOREARM_ROTATION))
 					glRotated(VAL(RIGHT_FOREARM_ROTATION), 1.0, 0.0, 0.0);
+				glRotated(rightUpperArmAngle, 1.0, 0.0, 0.0); // For link movement
 				glRotated(-90, 0.0, 0.0, 1.0);
 				drawRightUpperArm();
 				    //draw right lower arm
 					glTranslated(0.0, rightUpperArmSize[1], 0.0);
+					glRotated(rightLowerArmAngle, 1.0, 0.0, 0.0); // For link movement
 					VAL(LOWERARM2) ? drawRightLowerArm2() : drawRightLowerArm();
 						//draw right Fist
 						glTranslated(0.0, rightLowerArmSize[1], 0.0);
@@ -281,6 +291,10 @@ void GundamModel::draw()
 						drawHammer();
 		glPopMatrix();
 
+		leftShoulderAngle = VAL(LEFT_ARM_LINK_MOVEMENT);
+		leftUpperArmAngle = VAL(LEFT_ARM_LINK_MOVEMENT);
+		leftLowerArmAngle = 1.5*VAL(LEFT_ARM_LINK_MOVEMENT);
+
 		//draw left arm
 		glPushMatrix();
 		//draw left shoulder
@@ -288,16 +302,19 @@ void GundamModel::draw()
 			glRotated(90, 0.0, 0.0, 1.0);
 
 			glRotated(VAL(RAISE_LEFT_ARM_X), 0.0, 1.0, 0.0);
+			glRotated(leftShoulderAngle, 0.0, 1.0, 0.0); // For link movement
 			glRotated(VAL(RAISE_LEFT_ARM_Z), 0.0, 0.0, 1.0);
 			VAL(SHOULDER2) ? drawLeftShoulder2() : drawLeftShoulder();
 			//draw left upper arm
 			glTranslated(-leftShoulderSize[0] / 2, leftShoulderSize[1] / 2, 0);
 			if (VAL(LEFT_FOREARM_ROTATION))
 				glRotated(VAL(LEFT_FOREARM_ROTATION), 1.0, 0.0, 0.0);
+			glRotated(leftUpperArmAngle, 1.0, 0.0, 0.0); // For link movement
 			glRotated(90, 0.0, 0.0, 1.0);
 			drawLeftUpperArm();
 			//draw left lower arm
 			glTranslated(0.0, leftUpperArmSize[1], 0.0);
+			glRotated(leftLowerArmAngle, 1.0, 0.0, 0.0); // For link movement
 			VAL(LOWERARM2) ? drawLeftLowerArm2() : drawLeftLowerArm();
 			//draw left Fist
 			glTranslated(0.0, leftLowerArmSize[1], 0.0);
