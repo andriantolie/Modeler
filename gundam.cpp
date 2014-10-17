@@ -471,7 +471,10 @@ void GundamModel::drawUpperBody(){
 	glPushMatrix();
 		glTranslated(-upperBodySize[0]/2, 0, -upperBodySize[2]/2);
 		glScaled(upperBodySize[0], upperBodySize[1], upperBodySize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -490,7 +493,10 @@ void GundamModel::drawLowerBody(){
 	setDiffuseColor(COLOR_YELLOW);
 	glTranslated(-lowerBodySize[0] / 2, 0, -lowerBodySize[2] / 2);
 	glScaled(lowerBodySize[0], lowerBodySize[1], lowerBodySize[2]);
-	drawBox(1, 1, 1);
+	if (VAL(TEXTURE_MAPPING))
+		drawTextureBox(1, 1, 1);
+	else
+		drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -515,14 +521,20 @@ void GundamModel::drawHead(){
 			glTranslated(-headSize[0] / 6, -1, -headSize[2] / 6);
 			glScaled(headSize[0]/3, headSize[1], headSize[2]/3);
 			//glRotated(-90, 1.0, 0.0, 0.0);
-			drawBox(1, 1, 1);
+			if (VAL(TEXTURE_MAPPING))
+				drawTextureBox(1, 1, 1);
+			else
+				drawBox(1, 1, 1);
 		glPopMatrix();
 		//draw head
 		setDiffuseColor(COLOR_YELLOW);
 		glPushMatrix();
 			glTranslated(-headSize[0] / 2, headSize[1]/6, -headSize[2] / 2);
 			glScaled(headSize[0], headSize[1], headSize[2]);
-			drawBox(1, 1, 1);
+			if (VAL(TEXTURE_MAPPING))
+				drawTextureBox(1, 1, 1);
+			else
+				drawBox(1, 1, 1);
 		glPopMatrix();
 	glPopMatrix();
 }
@@ -571,7 +583,10 @@ void GundamModel::drawRightShoulder(){
 	setDiffuseColor(COLOR_YELLOW);
 		glTranslated(-rightShoulderSize[0] / 2 , 0.5, -rightShoulderSize[2] / 2);
 		glScaled(rightShoulderSize[0], rightShoulderSize[1], rightShoulderSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -655,7 +670,10 @@ void GundamModel::drawRightUpperArm(){
 	glPushMatrix();
 		glTranslated(-rightUpperArmSize[0] / 2 -0.5, 0, -rightUpperArmSize[2] / 2);
 		glScaled(rightUpperArmSize[0], rightUpperArmSize[1], rightUpperArmSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -666,7 +684,10 @@ void GundamModel::drawRightLowerArm(){
 	glPushMatrix();
 		glTranslated(-rightLowerArmSize[0] / 2 -0.5, 0, -rightLowerArmSize[2] / 2);
 		glScaled(rightLowerArmSize[0], rightLowerArmSize[1], rightLowerArmSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -784,7 +805,10 @@ void GundamModel::drawRightFist(){
 	setDiffuseColor(COLOR_YELLOW);
 		glTranslated(-rightFistSize[0] / 2 -0.5, 0.25, -rightFistSize[2] / 2);
 		glScaled(rightFistSize[0], rightFistSize[1], rightFistSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -795,7 +819,10 @@ void GundamModel::drawLeftShoulder(){
 	setDiffuseColor(COLOR_YELLOW);
 		glTranslated(-leftShoulderSize[0] / 2, 0.5, -leftShoulderSize[2] / 2);
 		glScaled(leftShoulderSize[0], leftShoulderSize[1], leftShoulderSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -877,7 +904,10 @@ void GundamModel::drawLeftUpperArm(){
 	glPushMatrix();
 		glTranslated(-leftUpperArmSize[0] / 2 + 0.5 , 0, -leftUpperArmSize[2] / 2);
 		glScaled(leftUpperArmSize[0], leftUpperArmSize[1], leftUpperArmSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -888,7 +918,10 @@ void GundamModel::drawLeftLowerArm(){
 	glPushMatrix();
 		glTranslated(-leftLowerArmSize[0] / 2 + 0.5 , 0, -leftLowerArmSize[2] / 2);
 		glScaled(leftLowerArmSize[0], leftLowerArmSize[1], leftLowerArmSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -1002,7 +1035,10 @@ void GundamModel::drawLeftFist(){
 	setDiffuseColor(COLOR_YELLOW);
 		glTranslated(-leftFistSize[0] / 2 + 0.5 , 0.25, -leftFistSize[2] / 2);
 		glScaled(leftFistSize[0], leftFistSize[1], leftFistSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -1013,7 +1049,10 @@ void GundamModel::drawRightThigh(){
 	setDiffuseColor(COLOR_YELLOW);
 		glTranslated(-rightThighSize[0] / 2, 0, -rightThighSize[2] / 2);
 		glScaled(rightThighSize[0], rightThighSize[1], rightThighSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -1036,7 +1075,10 @@ void GundamModel::drawRightUpperLeg(){
 	glPushMatrix();
 		glTranslated(-rightUpperLegSize[0] / 2, 0, -rightUpperLegSize[2] / 2);
 		glScaled(rightUpperLegSize[0], rightUpperLegSize[1], rightUpperLegSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -1047,7 +1089,10 @@ void GundamModel::drawRightLowerLeg(){
 	glPushMatrix();
 		glTranslated(-rightLowerLegSize[0] / 2, 0, -rightLowerLegSize[2] / 2);
 		glScaled(rightLowerLegSize[0], rightLowerLegSize[1], rightLowerLegSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 //OpenGl command to draw lower body
@@ -1161,7 +1206,10 @@ void GundamModel::drawRightFoot(){
 	setDiffuseColor(COLOR_YELLOW);
 		glTranslated(-rightFootSize[0] / 2, 0, -rightFootSize[2] / 2);
 		glScaled(rightFootSize[0], rightFootSize[1], rightFootSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -1173,7 +1221,10 @@ void GundamModel::drawLeftThigh(){
 	setDiffuseColor(COLOR_YELLOW);
 		glTranslated(-leftThighSize[0] / 2, 0, -leftThighSize[2] / 2);
 		glScaled(leftThighSize[0], leftThighSize[1], leftThighSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -1195,7 +1246,10 @@ void GundamModel::drawLeftUpperLeg(){
 	glPushMatrix();
 		glTranslated(-leftUpperLegSize[0] / 2, 0, -leftUpperLegSize[2] / 2);
 		glScaled(leftUpperLegSize[0], leftUpperLegSize[1], leftUpperLegSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -1207,7 +1261,10 @@ void GundamModel::drawLeftLowerLeg(){
 	glPushMatrix();
 		glTranslated(-leftLowerLegSize[0] / 2, 0, -leftLowerLegSize[2] / 2);
 		glScaled(leftLowerLegSize[0], leftLowerLegSize[1], leftLowerLegSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 void GundamModel::drawLeftLowerLeg2(){
@@ -1319,7 +1376,10 @@ void GundamModel::drawLeftFoot(){
 	setDiffuseColor(COLOR_YELLOW);
 		glTranslated(-leftFootSize[0] / 2, 0, -leftFootSize[2] / 2);
 		glScaled(leftFootSize[0], leftFootSize[1], leftFootSize[2]);
-		drawBox(1, 1, 1);
+		if (VAL(TEXTURE_MAPPING))
+			drawTextureBox(1, 1, 1);
+		else
+			drawBox(1, 1, 1);
 	glPopMatrix();
 }
 
@@ -1403,6 +1463,7 @@ int main()
 	controls[THIGH2] = ModelerControl("Thigh Type 2?", 0, 1, 1, 0);
 	controls[LOWERLEG2] = ModelerControl("Lower Leg Type 2?", 0, 1, 1, 0);
 	controls[HAMMER] = ModelerControl("Use Hammer?", 0, 1, 1, 0);
+	controls[TEXTURE_MAPPING] = ModelerControl("Texture mapping option", 0, 1, 1, 0);
 	controls[FRAMEALL] = ModelerControl("Frame All?", 0, 1, 1, 0);
 
 	ModelerApplication::Instance()->Init(&createGundamModel, controls, NUMCONTROLS);
