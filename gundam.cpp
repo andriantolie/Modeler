@@ -234,98 +234,98 @@ void GundamModel::draw()
 	// projection matrix, don't bother with this ...
 	ModelerView::draw();
 
-	// draw the floor
-	//setAmbientColor(.1f, .1f, .1f);
-	//setDiffuseColor(COLOR_RED);
-	//glPushMatrix();
-	//glTranslated(-5, 0, -5);
-	//drawBox(10, 0.01f, 10);
-	//glPopMatrix();
-
-	// draw the Gundam model
-	// draw the torso
-	GLfloat lightColor[] = {VAL(LIGHT_INTENSITY)/100.0, VAL(LIGHT_INTENSITY)/100.0, VAL(LIGHT_INTENSITY)/100.0, 1.0f};
+	//Set the lighting
+	GLfloat lightColor[] = { VAL(LIGHT_INTENSITY) / 100.0, VAL(LIGHT_INTENSITY) / 100.0, VAL(LIGHT_INTENSITY) / 100.0, 1.0f };
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor);
 	setAmbientColor(1.0f, 1.0f, 1.0f);
 	setDiffuseColor(COLOR_YELLOW);
+	//	setSpecularColor(0.8f, 0.5f, 0.0f);
+
 	bool animate = ModelerApplication::Instance()->GetAnimation();
 	if (animate)
 		animationIterator();
-//	setSpecularColor(0.8f, 0.5f, 0.0f);
+
+	// Start drawing the Gundam model
 	glPushMatrix();
-		glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
-		if (VAL(CROUCH))
-			glTranslated(0, -(1-cos(PI*VAL(CROUCH)*2/180))*leftThighSize[1], 0);
-		glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
-		glRotated(VAL(ROTATE_UPPER_BODY), 0.0, 1.0, 0.0);
-		if (animate)
-			glRotated(-animUpperBody, 0.0, 1.0, 0.0);
-		VAL(UPPERBODY2) ? drawUpperBody2() : drawUpperBody();
-        //draw head
+	glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
+
+	//draw Upper Body
+	if (VAL(CROUCH))
+		glTranslated(0, -(1 - cos(PI*VAL(CROUCH) * 2 / 180))*leftThighSize[1], 0);
+	glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
+	glRotated(VAL(ROTATE_UPPER_BODY), 0.0, 1.0, 0.0);
+	if (animate)
+		glRotated(-animUpperBody, 0.0, 1.0, 0.0);
+	VAL(UPPERBODY2) ? drawUpperBody2() : drawUpperBody();
+
+	if (VAL(DETAIL) >= 1){
+		//draw head
 		glPushMatrix();
-			glTranslated(0, upperBodySize[1], 0);
-			if (VAL(ROTATE_HEAD_X))
-				glRotated(VAL(ROTATE_HEAD_X), 1.0, 0.0, 0.0);
-			if (VAL(ROTATE_HEAD_Y))
-				glRotated(VAL(ROTATE_HEAD_Y), 0.0, 1.0, 0.0);
-			if (VAL(ROTATE_HEAD_Z))
-				glRotated(VAL(ROTATE_HEAD_Z), 0.0, 0.0, 1.0);
-			VAL(HEAD2) ? drawHead2() : drawHead();
-			glTranslated(0.0, headSize[1] + headSize[1] / 6, 0.0);
+		glTranslated(0, upperBodySize[1], 0);
+		if (VAL(ROTATE_HEAD_X))
+			glRotated(VAL(ROTATE_HEAD_X), 1.0, 0.0, 0.0);
+		if (VAL(ROTATE_HEAD_Y))
+			glRotated(VAL(ROTATE_HEAD_Y), 0.0, 1.0, 0.0);
+		if (VAL(ROTATE_HEAD_Z))
+			glRotated(VAL(ROTATE_HEAD_Z), 0.0, 0.0, 1.0);
+		VAL(HEAD2) ? drawHead2() : drawHead();
+		glTranslated(0.0, headSize[1] + headSize[1] / 6, 0.0);
 		glPopMatrix();
 
-		
+		//draw right arm
 		rightShoulderAngle = VAL(RIGHT_ARM_LINK_MOVEMENT);
 		rightUpperArmAngle = VAL(RIGHT_ARM_LINK_MOVEMENT);
 		rightLowerArmAngle = 1.5*VAL(RIGHT_ARM_LINK_MOVEMENT);
-		
-
-		//draw right arm
 		glPushMatrix();
 		//draw right shoulder
-			glTranslated(upperBodySize[0]/2, upperBodySize[1]-rightShoulderSize[0]/2, 0);
+		glTranslated(upperBodySize[0] / 2, upperBodySize[1] - rightShoulderSize[0] / 2, 0);
+		glRotated(-90, 0.0, 0.0, 1.0);
+		glRotated(-(VAL(RAISE_RIGHT_ARM_X)), 0.0, 1.0, 0.0);
+		glRotated(-rightShoulderAngle, 0.0, 1.0, 0.0); // For link movement
+		glRotated(VAL(RAISE_RIGHT_ARM_Z), 0.0, 0.0, 1.0);
+		VAL(SHOULDER2) ? drawRightShoulder2() : drawRightShoulder();
+		//draw right upper arm
+		if (VAL(DETAIL) >= 2){
+			glTranslated(rightShoulderSize[0] / 2, rightShoulderSize[1] / 2, 0);
+			if (VAL(RIGHT_FOREARM_ROTATION))
+				glRotated(VAL(RIGHT_FOREARM_ROTATION), 1.0, 0.0, 0.0);
+			glRotated(rightUpperArmAngle, 1.0, 0.0, 0.0); // For link movement
 			glRotated(-90, 0.0, 0.0, 1.0);
-			glRotated(-(VAL(RAISE_RIGHT_ARM_X)), 0.0, 1.0, 0.0);
-			glRotated(-rightShoulderAngle, 0.0, 1.0, 0.0); // For link movement
-			glRotated(VAL(RAISE_RIGHT_ARM_Z), 0.0, 0.0, 1.0);
-			VAL(SHOULDER2)? drawRightShoulder2() : drawRightShoulder(); 
-				//draw right upper arm
-				glTranslated(rightShoulderSize[0]/2, rightShoulderSize[1]/2, 0);
-				if (VAL(RIGHT_FOREARM_ROTATION))
-					glRotated(VAL(RIGHT_FOREARM_ROTATION), 1.0, 0.0, 0.0);
-				glRotated(rightUpperArmAngle, 1.0, 0.0, 0.0); // For link movement
-				glRotated(-90, 0.0, 0.0, 1.0);
-				drawRightUpperArm();
-				    //draw right lower arm
-					glTranslated(0.0, rightUpperArmSize[1], 0.0);
-					glRotated(rightLowerArmAngle, 1.0, 0.0, 0.0); // For link movement
-					VAL(LOWERARM2) ? drawRightLowerArm2() : drawRightLowerArm();
-						//draw right Fist
-						glTranslated(0.0, rightLowerArmSize[1], 0.0);
-						drawRightFist();
-						if (VAL(HAMMER)){
-							glTranslated(0.0,rightFistSize[1], 0.0);
-							glRotated(90, 1.0, 0.0, 0.0);
-							drawHammer();
-						}
+			drawRightUpperArm();
+			//draw right lower arm
+			if (VAL(DETAIL) >= 3){
+				glTranslated(0.0, rightUpperArmSize[1], 0.0);
+				glRotated(rightLowerArmAngle, 1.0, 0.0, 0.0); // For link movement
+				VAL(LOWERARM2) ? drawRightLowerArm2() : drawRightLowerArm();
+				//draw right Fist
+				if (VAL(DETAIL) >= 4){
+					glTranslated(0.0, rightLowerArmSize[1], 0.0);
+					drawRightFist();
+					if (VAL(HAMMER)){
+						glTranslated(0.0, rightFistSize[1], 0.0);
+						glRotated(90, 1.0, 0.0, 0.0);
+						drawHammer();
+					}
+				}
+			}
+		}
 		glPopMatrix();
 
+		//draw left arm
 		leftShoulderAngle = VAL(LEFT_ARM_LINK_MOVEMENT);
 		leftUpperArmAngle = VAL(LEFT_ARM_LINK_MOVEMENT);
 		leftLowerArmAngle = 1.5*VAL(LEFT_ARM_LINK_MOVEMENT);
-
-		//draw left arm
 		glPushMatrix();
 		//draw left shoulder
-			glTranslated(-upperBodySize[0] / 2, upperBodySize[1] - leftShoulderSize[0] / 2, 0);
-			glRotated(90, 0.0, 0.0, 1.0);
-
-			glRotated(VAL(RAISE_LEFT_ARM_X), 0.0, 1.0, 0.0);
-			glRotated(leftShoulderAngle, 0.0, 1.0, 0.0); // For link movement
-			glRotated(-VAL(RAISE_LEFT_ARM_Z), 0.0, 0.0, 1.0);
-			VAL(SHOULDER2) ? drawLeftShoulder2() : drawLeftShoulder();
-			//draw left upper arm
+		glTranslated(-upperBodySize[0] / 2, upperBodySize[1] - leftShoulderSize[0] / 2, 0);
+		glRotated(90, 0.0, 0.0, 1.0);
+		glRotated(VAL(RAISE_LEFT_ARM_X), 0.0, 1.0, 0.0);
+		glRotated(leftShoulderAngle, 0.0, 1.0, 0.0); // For link movement
+		glRotated(-VAL(RAISE_LEFT_ARM_Z), 0.0, 0.0, 1.0);
+		VAL(SHOULDER2) ? drawLeftShoulder2() : drawLeftShoulder();
+		//draw left upper arm
+		if (VAL(DETAIL) >= 2){
 			glTranslated(-leftShoulderSize[0] / 2, leftShoulderSize[1] / 2, 0);
 			if (VAL(LEFT_FOREARM_ROTATION))
 				glRotated(VAL(LEFT_FOREARM_ROTATION), 1.0, 0.0, 0.0);
@@ -333,90 +333,111 @@ void GundamModel::draw()
 			glRotated(90, 0.0, 0.0, 1.0);
 			drawLeftUpperArm();
 			//draw left lower arm
-			glTranslated(0.0, leftUpperArmSize[1], 0.0);
-			glRotated(leftLowerArmAngle, 1.0, 0.0, 0.0); // For link movement
-			VAL(LOWERARM2) ? drawLeftLowerArm2() : drawLeftLowerArm();
-			//draw left Fist
-			glTranslated(0.0, leftLowerArmSize[1], 0.0);
-			drawLeftFist();
+			if (VAL(DETAIL) >= 3){
+				glTranslated(0.0, leftUpperArmSize[1], 0.0);
+				glRotated(leftLowerArmAngle, 1.0, 0.0, 0.0); // For link movement
+				VAL(LOWERARM2) ? drawLeftLowerArm2() : drawLeftLowerArm();
+				//draw left Fist
+				if (VAL(DETAIL) >= 4){
+					glTranslated(0.0, leftLowerArmSize[1], 0.0);
+					drawLeftFist();
+				}
+			}
+
+		}
 		glPopMatrix();
-//	glPopMatrix();
+
 
 		//draw lower body
 		glRotated(-(VAL(ROTATE_UPPER_BODY)), 0.0, 1.0, 0.0); // To fix the position of lower body
 		if (animate)
-			glRotated(animUpperBody/2, 0.0, 1.0, 0.0);
-
+			glRotated(animUpperBody / 2, 0.0, 1.0, 0.0);
 		glPushMatrix();
-			glRotated(180, 0.0, 0.0, 1.0);
-			VAL(LOWERBODY2) ? drawLowerBody2() : drawLowerBody();
+		glRotated(180, 0.0, 0.0, 1.0);
+		VAL(LOWERBODY2) ? drawLowerBody2() : drawLowerBody();
 		glPopMatrix();
-				//draw right leg
+
+		
+		if (VAL(DETAIL) >= 2){
+			//draw right leg
 			glPushMatrix();
-				//draw right thigh
-				glRotated(180, 0.0, 0.0, 1.0);
-				glTranslated(-lowerBodySize[0]/2, lowerBodySize[1]/4, 0.0);
-				glTranslated(-rightThighSize[0]/2, 0.0, 0.0);
+			//draw right thigh
+			glRotated(180, 0.0, 0.0, 1.0);
+			glTranslated(-lowerBodySize[0] / 2, lowerBodySize[1] / 4, 0.0);
+			glTranslated(-rightThighSize[0] / 2, 0.0, 0.0);
+			if (VAL(CROUCH)) {
+				thighCrouchAngle = 2 * VAL(CROUCH);
+				glRotated(thighCrouchAngle, 1.0, 0.0, 0.0);
+			}
+			glRotated(VAL(RAISE_RIGHT_LEG_X), 1.0, 0.0, 0.0);
+			glRotated(VAL(RAISE_RIGHT_LEG_Z), 0.0, 0.0, 1.0);
+			if (animate)
+				glRotated(animRightThigh, 1.0, 0.0, 0.0);
+			VAL(THIGH2) ? drawRightThigh2() : drawRightThigh();
+			//draw right upper leg
+			if (VAL(DETAIL) >= 3){
+				glTranslated(0.0, rightThighSize[1], 0.0);
 				if (VAL(CROUCH)) {
-					thighCrouchAngle = 2 * VAL(CROUCH);
-					glRotated(thighCrouchAngle, 1.0, 0.0, 0.0);
+					legCrouchAngle = 5 * VAL(CROUCH);
+					glRotated(-legCrouchAngle, 1.0, 0.0, 0.0);
 				}
-				glRotated(VAL(RAISE_RIGHT_LEG_X), 1.0, 0.0, 0.0);
-				glRotated(VAL(RAISE_RIGHT_LEG_Z), 0.0, 0.0, 1.0);
-				if (animate)
-					glRotated(animRightThigh, 1.0, 0.0, 0.0);
-				VAL(THIGH2) ? drawRightThigh2() : drawRightThigh();
-					//draw right upper leg
-					glTranslated(0.0, rightThighSize[1], 0.0);
-					if (VAL(CROUCH)) {
-						legCrouchAngle = 5 * VAL(CROUCH);
-						glRotated(-legCrouchAngle, 1.0, 0.0, 0.0);
-					}
-					drawRightUpperLeg();
-					    //draw right lower leg
-						glTranslated(0.0, rightUpperLegSize[1], 0.0);
+				drawRightUpperLeg();
+				//draw right lower leg
+				if (VAL(DETAIL) >= 4){
+					glTranslated(0.0, rightUpperLegSize[1], 0.0);
+					if (animate)
+						glRotated(-animRightLowerLeg, 1.0, 0.0, 0.0);
+					VAL(LOWERLEG2) ? drawRightLowerLeg2() : drawRightLowerLeg();
+					//draw right foot
+					if (VAL(DETAIL) >= 5){
+						glTranslated(0.0, rightLowerLegSize[1], 0.0);
 						if (animate)
-							glRotated(-animRightLowerLeg, 1.0, 0.0, 0.0);
-						VAL(LOWERLEG2) ? drawRightLowerLeg2() : drawRightLowerLeg();
-						    //draw right foot
-							glTranslated(0.0, rightLowerLegSize[1], 0.0);
-							if (animate)
-								glRotated(-animRightThigh, 1.0, 0.0, 0.0);
-							drawRightFoot();
+							glRotated(-animRightThigh, 1.0, 0.0, 0.0);
+						drawRightFoot();
+					}
+				}
+			}
 			glPopMatrix();
 
 			//draw left leg
 			glPushMatrix();
 			//draw left thigh
-				glRotated(180, 0.0, 0.0, 1.0);
-				glTranslated(lowerBodySize[0]/2, lowerBodySize[1] / 4, 0.0);
-				glTranslated(leftThighSize[0]/2, 0.0, 0.0);
-				if (VAL(CROUCH)) {
-					glRotated(thighCrouchAngle, 1.0, 0.0, 0.0);
-				}
-				glRotated(VAL(RAISE_LEFT_LEG_X), 1.0, 0.0, 0.0);
-				glRotated(-VAL(RAISE_LEFT_LEG_Z), 0.0, 0.0, 1.0);
-				if (animate)
-					glRotated(animLeftThigh, 1.0, 0.0, 0.0);
-				VAL(THIGH2) ? drawLeftThigh2() : drawLeftThigh();
-				//draw left upper leg
+			glRotated(180, 0.0, 0.0, 1.0);
+			glTranslated(lowerBodySize[0] / 2, lowerBodySize[1] / 4, 0.0);
+			glTranslated(leftThighSize[0] / 2, 0.0, 0.0);
+			if (VAL(CROUCH)) {
+				glRotated(thighCrouchAngle, 1.0, 0.0, 0.0);
+			}
+			glRotated(VAL(RAISE_LEFT_LEG_X), 1.0, 0.0, 0.0);
+			glRotated(-VAL(RAISE_LEFT_LEG_Z), 0.0, 0.0, 1.0);
+			if (animate)
+				glRotated(animLeftThigh, 1.0, 0.0, 0.0);
+			VAL(THIGH2) ? drawLeftThigh2() : drawLeftThigh();
+			//draw left upper leg
+			if (VAL(DETAIL) >= 3){
 				glTranslated(0.0, leftThighSize[1], 0.0);
 				if (VAL(CROUCH)) {
-						glRotated(-legCrouchAngle, 1.0, 0.0, 0.0);
-					}
+					glRotated(-legCrouchAngle, 1.0, 0.0, 0.0);
+				}
 				drawLeftUpperLeg();
 				//draw left lower leg
-				glTranslated(0.0, leftUpperLegSize[1], 0.0);
-				if (animate)
-					glRotated(-animLeftLowerLeg, 1.0, 0.0, 0.0);
-				VAL(LOWERLEG2) ? drawLeftLowerLeg2() : drawLeftLowerLeg();
-				//draw left foot
-				glTranslated(0.0, leftLowerLegSize[1], 0.0);
-				if (animate)
-					glRotated(-animLeftThigh, 1.0, 0.0, 0.0);
-				drawLeftFoot();
+				if (VAL(DETAIL) >= 4){
+					glTranslated(0.0, leftUpperLegSize[1], 0.0);
+					if (animate)
+						glRotated(-animLeftLowerLeg, 1.0, 0.0, 0.0);
+					VAL(LOWERLEG2) ? drawLeftLowerLeg2() : drawLeftLowerLeg();
+					//draw left foot
+					if (VAL(DETAIL) >= 5){
+						glTranslated(0.0, leftLowerLegSize[1], 0.0);
+						if (animate)
+							glRotated(-animLeftThigh, 1.0, 0.0, 0.0);
+						drawLeftFoot();
+					}
+				}
+			}
 			glPopMatrix();
-		glPopMatrix();
+		}
+	}
 	glPopMatrix();
 
 }
@@ -1319,6 +1340,7 @@ int main()
 	// Constructor is ModelerControl(name, minimumvalue, maximumvalue, 
 	// stepsize, defaultvalue)
 	ModelerControl controls[NUMCONTROLS];
+	controls[DETAIL] = ModelerControl("Level of Details", 0, 5, 1, 5);
 	controls[XPOS] = ModelerControl("X Position", -20, 20, 0.1f, 0);
 	controls[YPOS] = ModelerControl("Y Position", 0, 20, 0.1f, 0);
 	controls[ZPOS] = ModelerControl("Z Position", -20, 20, 0.1f, 0);
