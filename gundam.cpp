@@ -34,7 +34,7 @@ void drawRotatingCurve(float controlPoints[][3], double xRotationAxis, double yR
 	glEnable(GL_MAP1_VERTEX_3);
 	glColor3f(1.0, 0.0, 0.0);
 	setDiffuseColor(COLOR_YELLOW);
-	for (double angle = 0; angle < 360; angle += 0.05){
+	for (double angle = 0; angle < 360; angle += 0.1){
 		glRotated(angle, xRotationAxis, yRotationAxis, zRotationAxis);
 		glBegin(GL_LINE_STRIP);
 		for (int i = 0; i <= 30; i++){
