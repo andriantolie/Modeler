@@ -1,14 +1,20 @@
-// The Gundam model.  You should build a file
-// very similar to this for when you make your model.
+// The Gundam model.
+//Author:	LIE, Andrianto (alie@connect.ust.hk) - 20020408
+//			ZENG, Xiong (zxengac@connect.ust.hk) - 20025056
+
+
 #include "modelerview.h"
 #include "modelerapp.h"
 #include "modelerdraw.h"
 #include <FL/gl.h>
 #include <math.h>
 #include "modelerglobals.h"
+#include "camera.h"
+#include <iostream>
+using namespace std;
 
 #define PI 3.14159265
-int iterator = 0;
+
 
 //draw bezier curve and rotate it around specific axis
 void drawRotatingCurve(float controlPoints[][3], double xRotationAxis, double yRotationAxis, double zRotationAxis){
@@ -56,6 +62,7 @@ public:
 	virtual void draw();
 
 private:
+	int iterator;
 	double upperBodySize[3];
 	double lowerBodySize[3];
 	double headSize[3];
@@ -78,6 +85,8 @@ private:
 	double leftUpperLegSize[3];
 	double leftLowerLegSize[3];
 	double leftFootSize[3];
+
+	double gundamHeight;
 
 	int rightShoulderAngle;
 	int rightUpperArmAngle;
@@ -135,6 +144,8 @@ private:
 //[0] is x-axis, [1] is y-axis, [2] is z-axis
 GundamModel::GundamModel(int x, int y, int w, int h, char *label)
 : ModelerView(x, y, w, h, label) {
+
+	iterator = 0;
 
 	upperBodySize[0] = 6;
 	upperBodySize[1] = 4;
@@ -216,6 +227,9 @@ GundamModel::GundamModel(int x, int y, int w, int h, char *label)
 	leftFootSize[1] = 0.5;
 	leftFootSize[2] = 2;
 
+	gundamHeight = headSize[1] + headSize[1] / 6 + upperBodySize[1] + lowerBodySize[1] / 3
+		+ max(rightThighSize[1], leftThighSize[1])+ max(rightUpperLegSize[1], leftUpperLegSize[1]) +
+		max(rightLowerLegSize[1],leftLowerLegSize[1]) + max(rightFootSize[1], leftFootSize[1]);
 }
 
 // We need to make a creator function, mostly because of
@@ -229,6 +243,8 @@ ModelerView* createGundamModel(int x, int y, int w, int h, char *label)
 // method of ModelerView to draw out GundamModel
 void GundamModel::draw()
 {
+
+	//m_camera->frameAll();
 	// This call takes care of a lot of the nasty projection 
 	// matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
@@ -249,6 +265,11 @@ void GundamModel::draw()
 	// Start drawing the Gundam model
 	glPushMatrix();
 	glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
+
+	
+	if (VAL(FRAMEALL)) {
+		m_camera->frameAll( VAL(XPOS), VAL(YPOS), VAL(ZPOS));
+	}
 
 	//draw Upper Body
 	if (VAL(CROUCH))
@@ -441,6 +462,7 @@ void GundamModel::draw()
 		}
 	}
 	glPopMatrix();
+	if (VAL(FRAMEALL)) m_camera->revertFrameAll();
 
 }
 
@@ -1381,6 +1403,7 @@ int main()
 	controls[THIGH2] = ModelerControl("Thigh Type 2?", 0, 1, 1, 0);
 	controls[LOWERLEG2] = ModelerControl("Lower Leg Type 2?", 0, 1, 1, 0);
 	controls[HAMMER] = ModelerControl("Use Hammer?", 0, 1, 1, 0);
+	controls[FRAMEALL] = ModelerControl("Frame All?", 0, 1, 1, 0);
 
 	ModelerApplication::Instance()->Init(&createGundamModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();

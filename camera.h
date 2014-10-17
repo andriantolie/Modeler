@@ -83,6 +83,9 @@ public:
 
 	// gluLookAt equivalent
 	void lookAt(Vec3f eye, Vec3f at, Vec3f up);
+
+	void frameAll(double xPos, double yPos, double zPos);
+	void revertFrameAll();
 };
 
 #endif

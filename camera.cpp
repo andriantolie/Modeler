@@ -213,4 +213,17 @@ void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up){
 	glTranslatef(-eye[0]+at[0], -eye[1]+at[1], -eye[2]+at[2]);
 
 }
+
+void Camera::frameAll(double xPos, double yPos, double zPos){
+	Vec3f eye = mPosition;
+	Vec3f at = mLookAt;
+	glTranslatef(- xPos,- yPos, - zPos);
+	glTranslatef(-eye[0] + at[0], -eye[1] + at[1], -eye[2] + at[2]);
+}
+
+void Camera::revertFrameAll(){
+	Vec3f eye = mPosition;
+	Vec3f at = mLookAt;
+	glTranslatef(eye[0] - at[0], eye[1] - at[1], eye[2] - at[2]);
+}
 #pragma warning(pop)
