@@ -1,3 +1,5 @@
 modeler.opensdf
 *.sdf
 Debug/*
+modeler.sdf
+modeler.v12.suo
