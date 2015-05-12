@@ -1,4 +1,4 @@
-COMP4411-Modeler
+Modeler
 ================
 
-COMP4411 Modeler
+Computer Graphics Assignment Modeler
